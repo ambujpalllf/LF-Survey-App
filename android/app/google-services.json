@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "590998060276",
+    "project_id": "lf-survey-app-flutter",
+    "storage_bucket": "lf-survey-app-flutter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:590998060276:android:152cc8eb43f21631c872a1",
+        "android_client_info": {
+          "package_name": "com.lf.survey"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVGbQx512MJRhE_vPxjs80g9iWQY1QsUU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
