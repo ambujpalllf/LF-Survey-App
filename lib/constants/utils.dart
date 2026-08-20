@@ -367,6 +367,8 @@ class Utils {
     required String imageName,
     required String comment,
     String source = "",
+    String buildingName = "",
+    String wingName = "",
     loc.LocationData? locationData,
     String? additionalPathInfo,
   }) async {
@@ -391,8 +393,12 @@ class Utils {
                 'Lng: ${locationData.longitude?.toStringAsFixed(5)}\n'
                 'Acc: ${locationData.accuracy?.toStringAsFixed(1)}m\n'
                 'Date: ${DateFormat("dd-MM-yyyy HH:mm a").format(timestamp)}'
+                '${buildingName.isNotEmpty ? "\nBuilding Name: $buildingName" : ""}'
+                '${wingName.isNotEmpty ? "\nWing Name: $wingName" : ""}'
                 '${comment.isNotEmpty ? "\nComment: $comment" : ""}'
           : 'Date: ${DateFormat("dd-MM-yyyy HH:mm a").format(timestamp)}'
+                '${buildingName.isNotEmpty ? "\nBuilding Name: $buildingName" : ""}'
+                '${wingName.isNotEmpty ? "\nWing Name: $wingName" : ""}'
                 '${comment.isNotEmpty ? "\nComment: $comment" : ""}';
 
       // Create text style

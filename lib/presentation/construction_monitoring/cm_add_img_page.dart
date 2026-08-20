@@ -191,6 +191,7 @@ class _CmAddImgPageState extends State<CmAddImgPage> {
                   wingId: widget.wingData.wingId,
                   localBuildingId: widget.wingData.createdBuildingId,
                   localWingId: widget.wingData.createdWingId,
+                  buildingName: widget.wingData.buildingName ?? "",
                   wingName: widget.wingData.wingName ?? "",
                   context: context,
                 );

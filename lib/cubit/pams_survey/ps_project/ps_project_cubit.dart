@@ -76,6 +76,7 @@ class PsProjectCubit extends Cubit<PsProjectState> {
               await Future.wait(
                 building.wings!.map((wing) {
                   wing.projectId = project.projectId;
+                  wing.buildingName = building.buildingName;
                   wing.submitStatus = false;
                   return DBHelper.cmInsertWing(wing: wing);
                 }),

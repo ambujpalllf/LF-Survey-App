@@ -38,6 +38,7 @@ class CmAddImgCubit extends Cubit<CmAddImgState> {
     int? wingId,
     String? localBuildingId,
     String? localWingId,
+    required String buildingName,
     required String wingName,
     required BuildContext context,
   }) async {
@@ -63,6 +64,8 @@ class CmAddImgCubit extends Cubit<CmAddImgState> {
           imageFile: File(result.path),
           timestamp: DateTime.now(),
           imageName: "construction_monitoring",
+          buildingName: buildingName,
+          wingName: wingName,
           comment: "",
           locationData: currentLocation,
         );
