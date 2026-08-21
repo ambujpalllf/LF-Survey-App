@@ -90,6 +90,7 @@ class AddNewPrjCubit extends Cubit<AddNewPrjState> {
       }
       if (query.length >= 3) {
         final response = await ApiClient.fetchRera(query: query);
+        debugPrint("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG: $response");
         if (response != null) {
           ReraResponse reraResponse = ReraResponse.fromJson(response);
           if (reraResponse.data!.isNotEmpty) {
@@ -106,6 +107,10 @@ class AddNewPrjCubit extends Cubit<AddNewPrjState> {
       String erStr = e.toString().split(":").last;
       emit(ErrorState(message: erStr));
     }
+  }
+
+  void reraInfoAction() {
+    emit(ReraInfoState());
   }
 
   void fetchReraDetails({required int reraId}) async {

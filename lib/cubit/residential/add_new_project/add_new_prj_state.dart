@@ -82,3 +82,5 @@ class ReraDetailsState extends AddNewPrjState {
   List<ReraDetails> reraDetails;
   ReraDetailsState({required this.reraDetails});
 }
+
+class ReraInfoState extends AddNewPrjState {}

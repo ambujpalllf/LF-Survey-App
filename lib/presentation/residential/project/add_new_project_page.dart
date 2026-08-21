@@ -149,6 +149,8 @@ class _AddNewProjectPageState extends State<AddNewProjectPage> {
             } else if (state is ReraSearch) {
               reraList.clear();
               reraList.addAll(state.reraDatum);
+            } else if (state is ReraInfoState) {
+              reraList.clear();
             } else if (state is ReraDetailsState) {
               reraList.clear();
               reraDetailsList.clear();
@@ -275,7 +277,9 @@ class _AddNewProjectPageState extends State<AddNewProjectPage> {
 
                                       BlocBuilder<AddNewPrjCubit, AddNewPrjState>(
                                         buildWhen: (previous, current) =>
-                                            current is ReraSearch || current is ReraDetailsState,
+                                            current is ReraSearch ||
+                                            current is ReraDetailsState ||
+                                            current is ReraInfoState,
                                         builder: (context, state) {
                                           return reraList.isEmpty
                                               ? SizedBox.shrink()
@@ -289,9 +293,46 @@ class _AddNewProjectPageState extends State<AddNewProjectPage> {
                                                         itemBuilder: (context, index) {
                                                           return InkWell(
                                                             onTap: () {
-                                                              addNewPrjCubit.fetchReraDetails(
-                                                                reraId: reraList[index].id ?? 0,
-                                                              );
+                                                              if (reraList[index].projectId != 0) {
+                                                                showDialog(
+                                                                  context: context,
+                                                                  builder: (_) {
+                                                                    return AlertDialog(
+                                                                      shape: RoundedRectangleBorder(),
+                                                                      title: Row(
+                                                                        spacing: 8.0,
+                                                                        children: [
+                                                                          Icon(Icons.info, color: Colors.blueGrey),
+                                                                          Flexible(
+                                                                            child: Text(
+                                                                              "Alert",
+                                                                              style: AppTextStyle.ts18MB,
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      content: Text(
+                                                                        "RERA is already mapped to some other Project.",
+                                                                        style: AppTextStyle.ts14RB,
+                                                                      ),
+                                                                      actions: [
+                                                                        TextButton(
+                                                                          onPressed: () {
+                                                                            addNewPrjCubit.reraInfoAction();
+                                                                            reraNoC.clear();
+                                                                            context.pop();
+                                                                          },
+                                                                          child: Text("OK", style: AppTextStyle.ts18MB),
+                                                                        ),
+                                                                      ],
+                                                                    );
+                                                                  },
+                                                                );
+                                                              } else {
+                                                                addNewPrjCubit.fetchReraDetails(
+                                                                  reraId: reraList[index].id ?? 0,
+                                                                );
+                                                              }
                                                             },
                                                             child: Padding(
                                                               padding: const EdgeInsets.only(
