@@ -136,6 +136,10 @@ class CustomTextField extends StatelessWidget {
         errorText: errorText,
         errorMaxLines: errorMaxLines,
         errorStyle: errorTextStyle ?? AppTextStyle.ts14RB.copyWith(color: hintTextColor ?? AppColors.red),
+        border: UnderlineInputBorder(
+          // borderRadius: BorderRadius.circular(borderRadius ?? 8.0),
+          borderSide: BorderSide(color: borderColor ?? AppColors.greyLite, width: borderWidth ?? 1.0),
+        ),
         enabledBorder: UnderlineInputBorder(
           // borderRadius: BorderRadius.circular(borderRadius ?? 8.0),
           borderSide: BorderSide(color: borderColor ?? AppColors.greyLite, width: borderWidth ?? 1.0),

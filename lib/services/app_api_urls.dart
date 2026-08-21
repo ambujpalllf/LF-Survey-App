@@ -141,4 +141,6 @@ class AppApiUrls {
   static String cmDeleteWing({required int wingId}) {
     return "DeleteWing/$wingId";
   }
+
+  static const String cmDeleteWingRequest = "DeleteWingRequest";
 }

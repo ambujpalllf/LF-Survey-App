@@ -137,4 +137,42 @@ class CmSubPrjCubit extends Cubit<CmSubPrjState> {
       emit(ErrorState(message: errorMessage));
     }
   }
+
+  void deleteWingRequest({
+    required int id,
+    required int index,
+    int? wingId,
+    required int allocationId,
+    required String remarks,
+  }) async {
+    try {
+      if (wingId != null && wingId != 0) {
+        final response = await ApiClient.cmDeleteWingRequest(
+          allocationId: allocationId,
+          wingId: wingId,
+          remarks: remarks,
+        );
+
+        if (response != null) {
+          final status = response["status"]?.toString();
+          final message = response["message"]?.toString() ?? "Something went wrong";
+
+          if (status == "OK") {
+            // Delete from local DB only when API status is OK
+            await DBHelper.cmDeleteWing(id: id);
+
+            emit(SuccessState(message: "Wing deletion request has been submitted succesfully."));
+
+            emit(DeleteState(index: index));
+          } else {
+            // Don't delete from local DB
+            emit(ErrorState(message: message));
+          }
+        }
+      }
+    } catch (e) {
+      final errorMessage = e.toString().contains(":") ? e.toString().split(":").last.trim() : e.toString();
+      emit(ErrorState(message: errorMessage));
+    }
+  }
 }

@@ -1613,4 +1613,22 @@ class ApiClient {
       throw Exception(e);
     }
   }
+
+  static Future<dynamic> cmDeleteWingRequest({
+    required int allocationId,
+    required int wingId,
+    required String remarks,
+  }) async {
+    try {
+      String endUrl = AppApiUrls.cmDeleteWingRequest;
+      List<Map<String, dynamic>> payload = [
+        {"allocationId": allocationId, "wingId": wingId, "remarks": remarks},
+      ];
+      return DioClient(baseUrl: AppApiUrls.psBaseUrl).post(endUrl, data: payload);
+    } on ApiException catch (e) {
+      throw Exception(e.message);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
 }

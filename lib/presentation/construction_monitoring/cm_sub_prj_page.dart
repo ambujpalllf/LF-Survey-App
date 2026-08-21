@@ -20,6 +20,7 @@ import 'package:lf_survey/model/pams_survey/ps_prj_response.dart';
 import 'package:lf_survey/routes/app_routes_name.dart';
 import 'package:lf_survey/services/work_manager_task_register.dart';
 import 'package:lf_survey/widgets/custom_app_bar.dart';
+import 'package:lf_survey/widgets/custom_textfield.dart';
 import 'package:lf_survey/widgets/custom_textform_field.dart';
 
 class CMSubPrjPage extends StatefulWidget {
@@ -39,7 +40,7 @@ class _CMSubPrjPageState extends State<CMSubPrjPage> {
   List<WingData> filteredWings = [];
   List<CmSurveyModel> surveyData = [];
   List<PsPhotoDatum> imageData = [];
-
+  TextEditingController deleteWingRequestC = TextEditingController();
   late ReceivePort _receivePort;
   @override
   void initState() {
@@ -75,6 +76,7 @@ class _CMSubPrjPageState extends State<CMSubPrjPage> {
     searchFocusNode.dispose();
     IsolateNameServer.removePortNameMapping('sync_cm_wing');
     _receivePort.close();
+    deleteWingRequestC.dispose();
   }
 
   @override
@@ -263,21 +265,89 @@ class _CMSubPrjPageState extends State<CMSubPrjPage> {
                                                 syncCount: "${wingSyncSurvey.length}",
                                                 totalValue: "${wingSurvey.length}",
                                               ),
-                                              if (wingData.createdWingId != null && wingData.submitStatus != true)
+                                              // if (wingData.createdWingId != null && wingData.submitStatus != true)
+                                              if (wingData.submitStatus != true)
                                                 GestureDetector(
                                                   onTap: () {
-                                                    CutsomAlertDialogues.deleteDialogue(
-                                                      context: context,
-                                                      title: "Wing",
-                                                      onDelete: () {
-                                                        context.pop();
-                                                        context.read<CmSubPrjCubit>().deletewing(
-                                                          id: wingData.id ?? 0,
-                                                          index: index,
-                                                          wingId: wingData.wingId,
-                                                        );
-                                                      },
-                                                    );
+                                                    // Delete wing which is created by user
+                                                    if (wingData.createdWingId != null) {
+                                                      CutsomAlertDialogues.deleteDialogue(
+                                                        context: context,
+                                                        title: "Wing",
+                                                        onDelete: () {
+                                                          context.pop();
+                                                          context.read<CmSubPrjCubit>().deletewing(
+                                                            id: wingData.id ?? 0,
+                                                            index: index,
+                                                            wingId: wingData.wingId,
+                                                          );
+                                                        },
+                                                      );
+                                                    } else {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (_) {
+                                                          return AlertDialog(
+                                                            shape: RoundedRectangleBorder(
+                                                              borderRadius: BorderRadiusGeometry.circular(8.0),
+                                                            ),
+
+                                                            title: Row(
+                                                              children: [
+                                                                Icon(
+                                                                  Icons.info,
+                                                                  color: AppColors.primaryColor,
+                                                                  size: 24,
+                                                                ),
+                                                                const SizedBox(width: 8),
+                                                                Flexible(
+                                                                  child: Text(
+                                                                    "Delete Wing Request",
+                                                                    style: AppTextStyle.ts16BB,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            content: CustomTextField(
+                                                              controller: deleteWingRequestC,
+                                                              minLines: 1,
+                                                              maxLines: null,
+                                                              labelText: "Remarks",
+                                                              hintText: "Enter remarks",
+                                                              borderColor: AppColors.black,
+                                                            ),
+                                                            actions: [
+                                                              TextButton(
+                                                                onPressed: () {
+                                                                  Navigator.pop(context);
+                                                                  deleteWingRequestC.clear();
+                                                                },
+                                                                child: Text("Cancel", style: AppTextStyle.ts14BB),
+                                                              ),
+                                                              TextButton(
+                                                                onPressed: () {
+                                                                  context.read<CmSubPrjCubit>().deleteWingRequest(
+                                                                    id: wingData.id ?? 0,
+                                                                    index: index,
+                                                                    wingId: wingData.wingId,
+                                                                    allocationId: widget.prjDatum.allocationId ?? 0,
+                                                                    remarks: deleteWingRequestC.text,
+                                                                  );
+                                                                  deleteWingRequestC.clear();
+                                                                  context.pop();
+                                                                },
+                                                                child: Text(
+                                                                  "Delete",
+                                                                  style: AppTextStyle.ts14BB.copyWith(
+                                                                    color: AppColors.red,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    }
                                                   },
                                                   child: Container(
                                                     padding: EdgeInsetsDirectional.all(5.0),
