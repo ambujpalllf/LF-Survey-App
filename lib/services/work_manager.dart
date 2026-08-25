@@ -45,8 +45,13 @@ void callbackDispatcher() {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
     try {
-      switch (task) {
+       final String normalizedTask = task.contains('_')
+    ? task.substring(0, task.lastIndexOf('_'))
+    : task;
+      // switch (task) {
+      switch (normalizedTask) {
         case WorkmanagerTaskKey.syncLocation:
+        debugPrint("Take Name ##############: $normalizedTask");
           final userId = await StorageFunction.readIntData(StorageKey.userId);
           final loginType = await StorageFunction.readStringData(StorageKey.loginType);
           if (userId != null && loginType != null && loginType != "lfSurvey") {
@@ -73,6 +78,7 @@ void callbackDispatcher() {
               if (locationData.isNotEmpty) {
                 final response = await ApiClient.userLFLocation(locationData: locationData);
                 if (response != null) {
+                  debugPrint("MmMMMMMMMMMMMM*************: Sync location");
                   List<dynamic> syncData = response["gpssyncstatuslist"] ?? [];
                   if (syncData.isNotEmpty) {
                     for (var item in syncData) {
@@ -200,6 +206,7 @@ void callbackDispatcher() {
           final List<ImageEntity> images = await DBHelper.fetcImgEntity(imageId: imageId);
           if (images.isNotEmpty) {
             for (var img in images) {
+              if(img.sync == 0){
               final response = await ApiClient.uploadImage(img);
               if (response != null && response["resultCode"] == 1) {
                 String imgPath = (img.imageUri ?? "").split("/").last;
@@ -216,7 +223,7 @@ void callbackDispatcher() {
                     ),
                   ),
                 );
-              }
+              }}
             }
             final SendPort? send = IsolateNameServer.lookupPortByName('sync_project_image');
             send?.send({"projectId": projectId, "subProjectId": subProjectId});

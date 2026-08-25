@@ -59,13 +59,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBU7LNMMMvXWGZJdxsoCaB4zkyXd7nO_pk',
-    appId: '1:590998060276:ios:17a9277c1f5c690ac872a1',
+    appId: '1:590998060276:ios:90d02dc87757bb11c872a1',
     messagingSenderId: '590998060276',
     projectId: 'lf-survey-app-flutter',
     storageBucket: 'lf-survey-app-flutter.firebasestorage.app',
-    iosBundleId: 'com.example.lfSurvey',
+    iosBundleId: 'com.lf.survey',
   );
-
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyBU7LNMMMvXWGZJdxsoCaB4zkyXd7nO_pk',
     appId: '1:590998060276:ios:17a9277c1f5c690ac872a1',

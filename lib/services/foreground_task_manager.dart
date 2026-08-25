@@ -157,6 +157,7 @@ class ForegroundTaskManager extends TaskHandler {
         mobileAppId: 1,
         userId: userId ?? 0,
       );
+       debugPrint('On Repeat Event Location: ${currentLocation.latitude}, ${currentLocation.longitude}');
       await DBHelper.insertLocation(locationData: data);
     } on LocationServiceDisabledException {
       FlutterForegroundTask.stopService();
