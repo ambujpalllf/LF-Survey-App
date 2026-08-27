@@ -216,6 +216,7 @@ class CustomBottomsheet {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         addImgWidget(
+                          context: context,
                           icon: Icons.image,
                           onPressed: () {
                             prjImgCubit.pickImgGallery(
@@ -229,6 +230,7 @@ class CustomBottomsheet {
                           title: 'Add Project Picture Gallery',
                         ),
                         addImgWidget(
+                          context: context,
                           icon: Icons.camera_alt,
                           onPressed: () {
                             context.pop();
@@ -288,6 +290,7 @@ class CustomBottomsheet {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         addImgWidget(
+                          context: context,
                           icon: Icons.bar_chart,
                           onPressed: () {
                             prjImgCubit.pickImgGallery(
@@ -302,6 +305,7 @@ class CustomBottomsheet {
                           title: 'Add Price Chart Gallery',
                         ),
                         addImgWidget(
+                          context: context,
                           icon: Icons.bar_chart,
                           onPressed: () {
                             context.pop();
@@ -323,6 +327,7 @@ class CustomBottomsheet {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         addImgWidget(
+                          context: context,
                           icon: Icons.image,
                           onPressed: () {
                             prjImgCubit.pickImgGallery(
@@ -337,6 +342,7 @@ class CustomBottomsheet {
                           title: 'Add Construction Picture Gallery',
                         ),
                         addImgWidget(
+                          context: context,
                           icon: Icons.camera_alt,
                           onPressed: () {
                             context.pop();
@@ -362,10 +368,24 @@ class CustomBottomsheet {
     );
   }
 
-  static Widget addImgWidget({required IconData icon, required VoidCallback onPressed, required String title}) {
+  static Widget addImgWidget({
+    required BuildContext context,
+    required IconData icon,
+    required VoidCallback onPressed,
+    required String title,
+  }) {
     return Flexible(
       child: InkWell(
-        onTap: onPressed,
+        // onTap: onPressed,
+        onTap: () async {
+          final locPermission = await Utils.checkLocationAndGpsPermission(context);
+          if (!context.mounted) return;
+          if (!locPermission) {
+            CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+            return;
+          }
+          onPressed();
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           spacing: 8.0,
@@ -832,6 +852,7 @@ class CustomBottomsheet {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   addImgWidget(
+                    context: context,
                     icon: Icons.add_card,
                     onPressed: () {
                       newPrjImgCubit.pickImgGallery(
@@ -844,6 +865,7 @@ class CustomBottomsheet {
                     title: 'Add VC (Gallery)',
                   ),
                   addImgWidget(
+                    context: context,
                     icon: Icons.camera_alt,
                     onPressed: () {
                       context.pop();
@@ -862,6 +884,7 @@ class CustomBottomsheet {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   addImgWidget(
+                    context: context,
                     icon: Icons.bar_chart,
                     onPressed: () {
                       newPrjImgCubit.pickImgGallery(
@@ -874,6 +897,7 @@ class CustomBottomsheet {
                     title: 'Add Chart (Gallery)',
                   ),
                   addImgWidget(
+                    context: context,
                     icon: Icons.camera_alt,
                     onPressed: () {
                       context.pop();
@@ -892,6 +916,7 @@ class CustomBottomsheet {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   addImgWidget(
+                    context: context,
                     icon: Icons.image,
                     onPressed: () {
                       newPrjImgCubit.pickImgGallery(
@@ -904,6 +929,7 @@ class CustomBottomsheet {
                     title: 'Add Picture (Gallery)',
                   ),
                   addImgWidget(
+                    context: context,
                     icon: Icons.camera_alt,
                     onPressed: () {
                       context.pop();
@@ -949,6 +975,7 @@ class CustomBottomsheet {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         addImgWidget(
+                          context: context,
                           icon: Icons.image,
                           onPressed: () {
                             cPrjImgCubit.pickImgGallery(
@@ -962,6 +989,7 @@ class CustomBottomsheet {
                           title: 'Add Project Picture Gallery',
                         ),
                         addImgWidget(
+                          context: context,
                           icon: Icons.camera_alt,
                           onPressed: () {
                             context.pop();
@@ -988,6 +1016,7 @@ class CustomBottomsheet {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         addImgWidget(
+                          context: context,
                           icon: Icons.add_card,
                           onPressed: () {
                             cPrjImgCubit.pickImgGallery(
@@ -1001,6 +1030,7 @@ class CustomBottomsheet {
                           title: 'Add Visiting Card Gallery',
                         ),
                         addImgWidget(
+                          context: context,
                           icon: Icons.camera_alt,
                           onPressed: () {
                             context.pop();
@@ -1020,6 +1050,7 @@ class CustomBottomsheet {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         addImgWidget(
+                          context: context,
                           icon: Icons.bar_chart,
                           onPressed: () {
                             cPrjImgCubit.pickImgGallery(
@@ -1033,6 +1064,7 @@ class CustomBottomsheet {
                           title: 'Add Project Chart Gallery',
                         ),
                         addImgWidget(
+                          context: context,
                           icon: Icons.camera_alt,
                           onPressed: () {
                             context.pop();
@@ -1052,6 +1084,7 @@ class CustomBottomsheet {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         addImgWidget(
+                          context: context,
                           icon: Icons.image,
                           onPressed: () {
                             cPrjImgCubit.pickImgGallery(
@@ -1065,6 +1098,7 @@ class CustomBottomsheet {
                           title: 'Add Project Picture Gallery',
                         ),
                         addImgWidget(
+                          context: context,
                           icon: Icons.camera_alt,
                           onPressed: () {
                             context.pop();

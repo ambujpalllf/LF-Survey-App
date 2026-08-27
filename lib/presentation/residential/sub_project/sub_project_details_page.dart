@@ -5,6 +5,8 @@ import 'package:lf_survey/app_popups/cutsom_alert_dialogues.dart';
 import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
+import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/residential/sub_project/sprj_details/s_prj_details_cubit.dart';
 import 'package:lf_survey/cubit/residential/sub_project/sprj_details/s_prj_details_state.dart';
 import 'package:lf_survey/model/db_model/residential/project_entity.dart';
@@ -318,6 +320,12 @@ class _SubProjectDetailsPageState extends State<SubProjectDetailsPage> {
           child: FloatingActionButton(
             backgroundColor: AppColors.red,
             onPressed: () async {
+              final locPermission = await Utils.checkLocationAndGpsPermission(context);
+              if (!context.mounted) return;
+              if (!locPermission) {
+                CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                return;
+              }
               await context.pushNamed(
                 AppRoutesName.subProjectDetailsFormPage,
                 extra: {"subProjectData": widget.subProjectsDatum},
@@ -343,7 +351,16 @@ class _SubProjectDetailsPageState extends State<SubProjectDetailsPage> {
         backgroundColor: AppColors.red,
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       ),
-      onPressed: onPressed,
+      // onPressed:onPressed,
+      onPressed: () async {
+        final locPermission = await Utils.checkLocationAndGpsPermission(context);
+        if (!context.mounted) return;
+        if (!locPermission) {
+          CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+          return;
+        }
+        onPressed();
+      },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -369,7 +386,16 @@ class _SubProjectDetailsPageState extends State<SubProjectDetailsPage> {
         backgroundColor: AppColors.red,
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       ),
-      onPressed: onPressed,
+      // onPressed: onPressed,
+      onPressed: () async {
+        final locPermission = await Utils.checkLocationAndGpsPermission(context);
+        if (!context.mounted) return;
+        if (!locPermission) {
+          CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+          return;
+        }
+        onPressed();
+      },
       child: Row(
         mainAxisAlignment: isMainspacing ? MainAxisAlignment.spaceBetween : MainAxisAlignment.center,
         children: [

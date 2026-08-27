@@ -6,6 +6,7 @@ import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/residential/new_prj_details/new_prj_details_cubit.dart';
 import 'package:lf_survey/cubit/residential/new_prj_details/new_prj_details_state.dart';
 import 'package:lf_survey/model/db_model/residential/new_project_entity.dart';
@@ -97,7 +98,13 @@ class _NewProjectDetailsPageState extends State<NewProjectDetailsPage> {
                           backgroundColor: AppColors.red,
                           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
+                          final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                          if (!context.mounted) return;
+                          if (!locPermission) {
+                            CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                            return;
+                          }
                           context.pushNamed(
                             AppRoutesName.newSubPrjListPage,
                             extra: {
@@ -132,7 +139,13 @@ class _NewProjectDetailsPageState extends State<NewProjectDetailsPage> {
                           backgroundColor: AppColors.red,
                           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
+                          final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                          if (!context.mounted) return;
+                          if (!locPermission) {
+                            CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                            return;
+                          }
                           context.pushNamed(
                             AppRoutesName.addNewImagePrjPage,
                             extra: {"projectId": widget.newProjectEntity.prjId, "prjType": null},

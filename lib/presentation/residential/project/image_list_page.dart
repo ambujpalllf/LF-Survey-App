@@ -8,6 +8,7 @@ import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/residential/image_list/img_list_cubit.dart';
 import 'package:lf_survey/cubit/residential/image_list/img_list_state.dart';
 import 'package:lf_survey/model/db_model/residential/image_entity.dart';
@@ -102,7 +103,13 @@ class _ImageListPageState extends State<ImageListPage> {
                 return IconButton(
                   onPressed: isSync == true
                       ? () {}
-                      : () {
+                      : () async {
+                          final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                          if (!context.mounted) return;
+                          if (!locPermission) {
+                            CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                            return;
+                          }
                           isSync = true;
                           prjListViewCubit.syncImages(prjImage: prjImage);
                         },
@@ -111,7 +118,28 @@ class _ImageListPageState extends State<ImageListPage> {
               },
             ),
             IconButton(
-              onPressed: () {
+              onPressed: () async {
+                if (prjImage.isEmpty) {
+                  CutsomAlertDialogues.customDialog(
+                    context: context,
+                    message: "No images available to delete.",
+                    actionsWidget: [
+                      TextButton(
+                        onPressed: () {
+                          context.pop();
+                        },
+                        child: Text("OK", style: AppTextStyle.ts16MB),
+                      ),
+                    ],
+                  );
+                  return;
+                }
+                final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                if (!context.mounted) return;
+                if (!locPermission) {
+                  CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                  return;
+                }
                 CutsomAlertDialogues.deleteDialogue(
                   context: context,
                   onDelete: () {

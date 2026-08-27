@@ -6,6 +6,7 @@ import 'package:lf_survey/app_popups/cutsom_alert_dialogues.dart';
 import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/residential/sub_project/new_flats/new_flats_cubit.dart';
 import 'package:lf_survey/cubit/residential/sub_project/new_flats/new_flats_state.dart';
 import 'package:lf_survey/model/db_model/residential/new_flat_entity.dart';
@@ -229,6 +230,12 @@ class _NewFlatListPageState extends State<NewFlatListPage> {
                 borderRadius: BorderRadiusGeometry.circular(100),
               ),
               onPressed: () async {
+                final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                if (!context.mounted) return;
+                if (!locPermission) {
+                  CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                  return;
+                }
                 final resp = await CustomBottomsheet.addNewFlatBtmSheet(
                   context: context,
                   subPrjId: widget.subPrjId,

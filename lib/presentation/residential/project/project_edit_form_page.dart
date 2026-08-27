@@ -844,7 +844,13 @@ class _ProjectEditFormPageState extends State<ProjectEditFormPage> {
                       child: CustomElevatedButton(
                         backgroundColor: AppColors.red,
                         text: "SAVE",
-                        onPressed: () {
+                        onPressed: () async {
+                          final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                          if (!context.mounted) return;
+                          if (!locPermission) {
+                            CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                            return;
+                          }
                           final result = projectEditCubit.projectValidation(
                             syncGlobalStatus: widget.projectData.syncGlobalStatus!,
                             selectedSchemes: selectedSchemes,

@@ -670,6 +670,14 @@ class _AddNewSPrjFormPageState extends State<AddNewSPrjFormPage> {
                                   backgroundColor: AppColors.primaryDarkColor,
                                   text: widget.formType.toLowerCase().trim() == "update" ? "UPDATE" : "SAVE",
                                   onPressed: () async {
+                                    final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                                    if (!context.mounted) return;
+                                    if (!locPermission) {
+                                      CustomSnackHelper.errorToast(
+                                        message: "Please enable location permission and GPS",
+                                      );
+                                      return;
+                                    }
                                     final resp = await subProjectFormCubit.addSubProject(
                                       formType: widget.formType,
                                       subPrjId: widget.newSubPrjEntity?.subPrjid.toString() ?? "",

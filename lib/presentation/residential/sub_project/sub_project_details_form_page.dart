@@ -619,7 +619,13 @@ class _SubProjectDetailsFormPageState extends State<SubProjectDetailsFormPage> {
                             isLoading: isLoading,
                             backgroundColor: AppColors.red,
                             text: "SAVE",
-                            onPressed: () {
+                            onPressed: () async {
+                              final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                              if (!context.mounted) return;
+                              if (!locPermission) {
+                                CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                                return;
+                              }
                               bool result = context.read<SPrjDetailsFormCubit>().validationFields(
                                 subProjectData: widget.subProjectsDatum,
                                 storey: storeyC.text,

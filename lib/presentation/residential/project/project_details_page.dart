@@ -317,7 +317,13 @@ class ProjectDetailsPage extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: AppColors.red,
-          onPressed: () {
+          onPressed: () async {
+            final locPermission = await Utils.checkLocationAndGpsPermission(context);
+            if (!context.mounted) return;
+            if (!locPermission) {
+              CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+              return;
+            }
             context.pushNamed(AppRoutesName.projectEditFormPage, extra: {"projectData": projectData});
           },
           shape: RoundedRectangleBorder(

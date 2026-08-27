@@ -5,6 +5,7 @@ import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/residential/sub_project/sprj_flat_details/s_prj_flat_details_cubit.dart';
 import 'package:lf_survey/cubit/residential/sub_project/sprj_flat_details/s_prj_flat_details_state.dart';
 import 'package:lf_survey/model/db_model/residential/flat_entity.dart';
@@ -102,7 +103,13 @@ class _SubProjectFlatDetailsPageState extends State<SubProjectFlatDetailsPage> {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12.0),
                           child: InkWell(
-                            onTap: () {
+                            onTap: () async {
+                              final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                              if (!context.mounted) return;
+                              if (!locPermission) {
+                                CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                                return;
+                              }
                               if (widget.subProjectsDatum.syncGlobalStatus == 1) {
                                 CustomSnackHelper.customToastMsg(
                                   context: context,
