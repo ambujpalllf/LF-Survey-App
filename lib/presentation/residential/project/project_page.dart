@@ -109,20 +109,32 @@ class _ProjectPageState extends State<ProjectPage> {
         ),
         actions: [
           InkWell(
-            onTap: () {
-              if (searchProjects.isNotEmpty) {
-                context.push(
-                  AppRoutesName.locationViewPage,
-                  extra: {"resiPrjects": searchProjects, "cProjects": null, "type": "resi"},
-                );
-              } else {
+            onTap: () async {
+              if (searchProjects.isEmpty) {
                 CustomSnackHelper.errorToast(message: "No project available to show in the map");
+                return;
               }
+              final locPermission = await Utils.checkLocationAndGpsPermission(context);
+              if (!context.mounted) return;
+              if (!locPermission) {
+                CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                return;
+              }
+              context.push(
+                AppRoutesName.locationViewPage,
+                extra: {"resiPrjects": searchProjects, "cProjects": null, "type": "resi"},
+              );
             },
             child: Image.asset(AppImages.gMapImg, color: AppColors.red, width: 25, fit: BoxFit.contain),
           ),
           IconButton(
             onPressed: () async {
+              final locPermission = await Utils.checkLocationAndGpsPermission(context);
+              if (!context.mounted) return;
+              if (!locPermission) {
+                CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                return;
+              }
               await context.pushNamed(AppRoutesName.filterPage);
               projectCubit.applyFilter(projects: projects);
             },
@@ -138,25 +150,61 @@ class _ProjectPageState extends State<ProjectPage> {
             onSelected: (String value) async {
               switch (value) {
                 case 'Download':
+                  final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                  if (!context.mounted) return;
+                  if (!locPermission) {
+                    CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                    return;
+                  }
                   await context.pushNamed(AppRoutesName.downloadPage, extra: {"appBarTitle": "Download"});
                   projectCubit.getProject();
                   break;
                 case 'Download Assigned New Project':
+                  final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                  if (!context.mounted) return;
+                  if (!locPermission) {
+                    CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                    return;
+                  }
                   projectCubit.downloadAssignNewProject(locationIds: "-1");
                   break;
                 case 'Image Sync':
+                  final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                  if (!context.mounted) return;
+                  if (!locPermission) {
+                    CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                    return;
+                  }
                   context.pushNamed(
                     AppRoutesName.imageListPage,
                     extra: {"projectId": 0, "subProjectId": 0, "resident": 1, "commercial": 0},
                   );
                   break;
                 case 'Report':
+                  final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                  if (!context.mounted) return;
+                  if (!locPermission) {
+                    CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                    return;
+                  }
                   context.pushNamed(AppRoutesName.reportPage);
                   break;
                 case 'Help':
+                  final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                  if (!context.mounted) return;
+                  if (!locPermission) {
+                    CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                    return;
+                  }
                   context.pushNamed(AppRoutesName.helpPage, extra: {"projectType": "resi"});
                   break;
                 case 'Local UnSync':
+                  final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                  if (!context.mounted) return;
+                  if (!locPermission) {
+                    CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                    return;
+                  }
                   localSyncCount(
                     projects: projects,
                     subProjects: subProjects,
@@ -193,15 +241,39 @@ class _ProjectPageState extends State<ProjectPage> {
                   );
                   break;
                 case 'Refresh Data':
+                  final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                  if (!context.mounted) return;
+                  if (!locPermission) {
+                    CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                    return;
+                  }
                   projectCubit.refreshData(projects: projects, subProjects: subProjects);
                   break;
                 case 'Download Drop-down Data':
+                  final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                  if (!context.mounted) return;
+                  if (!locPermission) {
+                    CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                    return;
+                  }
                   projectCubit.downloadProjectSpinner(isDownload: true);
                   break;
                 case 'Add New Project':
+                  final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                  if (!context.mounted) return;
+                  if (!locPermission) {
+                    CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                    return;
+                  }
                   context.pushNamed(AppRoutesName.newProjectsPage);
                   break;
                 case 'Download New Projects':
+                  final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                  if (!context.mounted) return;
+                  if (!locPermission) {
+                    CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                    return;
+                  }
                   projectCubit.downloadNewProjects();
                   break;
               }

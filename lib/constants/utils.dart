@@ -100,8 +100,8 @@ class Utils {
       if (context.mounted) {
         CutsomAlertDialogues.showPermissionSettingsDialog(context, permissionName: "Location");
       }
-      throw Exception("Location permission permanently denied.");
-      // return false;
+      // throw Exception("Location permission permanently denied.");
+      return false;
     }
 
     // Check if location services (GPS) are enabled
