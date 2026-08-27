@@ -7,6 +7,7 @@ import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_images.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/residential/project_details/prj_details_cubit.dart';
 import 'package:lf_survey/cubit/residential/project_details/prj_details_state.dart';
 import 'package:lf_survey/database/db_helper.dart';
@@ -49,7 +50,13 @@ class ProjectDetailsPage extends StatelessWidget {
           title: "Project Details",
           actions: [
             InkWell(
-              onTap: () {
+              onTap: () async {
+                final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                if (!context.mounted) return;
+                if (!locPermission) {
+                  CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                  return;
+                }
                 prjDetailsCubit.openGoogleMapsDirection(
                   projectData.pxval ?? 0.0,
                   projectData.pyval ?? 0.0,
@@ -92,6 +99,7 @@ class ProjectDetailsPage extends StatelessWidget {
                   width: width * 0.6,
                   child: customSuffixIcButton(
                     title: "SUB PROJECTS",
+                    context: context,
                     icon: Icons.arrow_forward_ios,
                     onPressed: () {
                       context.pushNamed(AppRoutesName.subProjectPage, extra: {"projectData": projectData});
@@ -105,6 +113,7 @@ class ProjectDetailsPage extends StatelessWidget {
                     Expanded(
                       child: customPrefixIcButton(
                         isCenter: true,
+                        context: context,
                         title: "List View",
                         icon: Icons.list,
                         onPressed: () {
@@ -120,6 +129,7 @@ class ProjectDetailsPage extends StatelessWidget {
                       child: customPrefixIcButton(
                         isCenter: true,
                         title: "Photo View",
+                        context: context,
                         icon: Icons.camera_alt,
                         onPressed: () {
                           context.pushNamed(
@@ -142,6 +152,7 @@ class ProjectDetailsPage extends StatelessWidget {
                     builder: (context, state) {
                       return customPrefixIcButton(
                         isCenter: true,
+                        context: context,
                         isLoading: state is LoadingState,
                         title: "Upload Brochure",
                         icon: Icons.upload_file,
@@ -204,6 +215,7 @@ class ProjectDetailsPage extends StatelessWidget {
                     Flexible(
                       child: customPrefixIcButton(
                         isCenter: true,
+                        context: context,
                         title: "Developer Logo",
                         icon: Icons.image,
                         onPressed: () {
@@ -219,6 +231,7 @@ class ProjectDetailsPage extends StatelessWidget {
                       child: customPrefixIcButton(
                         isCenter: true,
                         title: "Project Logo",
+                        context: context,
                         icon: Icons.image,
                         onPressed: () {
                           prjDetailsCubit.pickImgGallery(
@@ -235,6 +248,7 @@ class ProjectDetailsPage extends StatelessWidget {
                   width: width * 0.6,
                   child: customPrefixIcButton(
                     isCenter: true,
+                    context: context,
                     title: "Master Plan Image",
                     icon: Icons.image,
                     onPressed: () {
@@ -252,6 +266,7 @@ class ProjectDetailsPage extends StatelessWidget {
                     Flexible(
                       child: customPrefixIcButton(
                         isCenter: true,
+                        context: context,
                         title: "Elevation Image",
                         icon: Icons.image,
                         onPressed: () {
@@ -266,6 +281,7 @@ class ProjectDetailsPage extends StatelessWidget {
                     Flexible(
                       child: customPrefixIcButton(
                         isCenter: true,
+                        context: context,
                         title: "Key Plan Image",
                         icon: Icons.image,
                         onPressed: () {
@@ -283,6 +299,7 @@ class ProjectDetailsPage extends StatelessWidget {
                   width: width * 0.6,
                   child: customPrefixIcButton(
                     isCenter: true,
+                    context: context,
                     title: "Layout Plan Image",
                     icon: Icons.image,
                     onPressed: () {
@@ -314,13 +331,27 @@ class ProjectDetailsPage extends StatelessWidget {
   }
 
   // Suffix icon button
-  Widget customSuffixIcButton({required String title, required IconData icon, required VoidCallback onPressed}) {
+  Widget customSuffixIcButton({
+    required String title,
+    required IconData icon,
+    required VoidCallback onPressed,
+    required BuildContext context,
+  }) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.red,
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       ),
-      onPressed: onPressed,
+      // onPressed: onPressed,
+      onPressed: () async {
+        final locPermission = await Utils.checkLocationAndGpsPermission(context);
+        if (!context.mounted) return;
+        if (!locPermission) {
+          CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+          return;
+        }
+        onPressed();
+      },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -339,6 +370,7 @@ class ProjectDetailsPage extends StatelessWidget {
     required String title,
     required IconData icon,
     required VoidCallback onPressed,
+    required BuildContext context,
     bool isMainspacing = false,
     bool isSpaceAround = false,
     bool isCenter = false,
@@ -349,7 +381,16 @@ class ProjectDetailsPage extends StatelessWidget {
         backgroundColor: AppColors.red,
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       ),
-      onPressed: onPressed,
+      // onPressed: onPressed,
+      onPressed: () async {
+        final locPermission = await Utils.checkLocationAndGpsPermission(context);
+        if (!context.mounted) return;
+        if (!locPermission) {
+          CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+          return;
+        }
+        onPressed();
+      },
       child: isLoading
           ? SizedBox(
               width: 25,
