@@ -10,6 +10,7 @@ import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_images.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/construction_monitering/cm_building/cm_building_cubit.dart';
 import 'package:lf_survey/cubit/construction_monitering/cm_building/cm_building_state.dart';
 import 'package:lf_survey/model/construction_monitoring/cm_building_response.dart';
@@ -124,7 +125,13 @@ class _CmBuildingsPageState extends State<CmBuildingsPage> {
                 ? () {
                     finalSubmitInfo();
                   }
-                : () {
+                : () async {
+                    final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                    if (!context.mounted) return;
+                    if (!locPermission) {
+                      CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                      return;
+                    }
                     CutsomAlertDialogues.addBuildingDialogue(
                       context: context,
                       buildingC: buildingC,
@@ -199,6 +206,12 @@ class _CmBuildingsPageState extends State<CmBuildingsPage> {
                       //     .toList();
                       return GestureDetector(
                         onTap: () async {
+                          final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                          if (!context.mounted) return;
+                          if (!locPermission) {
+                            CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                            return;
+                          }
                           await context.pushNamed(
                             AppRoutesName.cmSubPrjPage,
                             extra: {"projectData": widget.prjDatum, "buildingData": building},
@@ -242,27 +255,39 @@ class _CmBuildingsPageState extends State<CmBuildingsPage> {
                                 Align(
                                   alignment: Alignment.topRight,
                                   child: GestureDetector(
-                                    onTap: widget.prjDatum.cmStatus == 1
-                                        ? () {
-                                            finalSubmitInfo();
-                                          }
-                                        : () {
-                                            CutsomAlertDialogues.addBuildingDialogue(
-                                              context: context,
-                                              buildingC: buildingC,
-                                              title: "Wing",
-                                              addBuilding: () {
-                                                context.pop();
-                                                context.read<CmBuildingCubit>().addWing(
-                                                  projectId: widget.prjDatum.projectId ?? 0,
-                                                  buildingId: building.buildingId,
-                                                  createdBuildingId: building.createdBuildingId ?? "",
-                                                  wingName: buildingC.text,
-                                                );
-                                                buildingC.clear();
-                                              },
-                                            );
-                                          },
+                                    onTap: () async {
+                                      final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                                      if (!context.mounted) return;
+                                      if (!locPermission) {
+                                        CustomSnackHelper.errorToast(
+                                          message: "Please enable location permission and GPS",
+                                        );
+                                        return;
+                                      }
+                                      if (widget.prjDatum.cmStatus == 1) {
+                                        finalSubmitInfo();
+                                        return;
+                                      }
+
+                                      CutsomAlertDialogues.addBuildingDialogue(
+                                        context: context,
+                                        buildingC: buildingC,
+                                        title: "Wing",
+                                        addBuilding: () {
+                                          context.pop();
+
+                                          context.read<CmBuildingCubit>().addWing(
+                                            projectId: widget.prjDatum.projectId ?? 0,
+                                            buildingId: building.buildingId,
+                                            createdBuildingId: building.createdBuildingId ?? "",
+                                            wingName: buildingC.text,
+                                          );
+
+                                          buildingC.clear();
+                                        },
+                                      );
+                                    },
+
                                     child: Container(
                                       decoration: BoxDecoration(
                                         color: Colors.red.shade400,

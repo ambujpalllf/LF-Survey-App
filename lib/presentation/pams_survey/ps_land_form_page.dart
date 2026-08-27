@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/pams_survey/ps_land_form/ps_land_form_cubit.dart';
 import 'package:lf_survey/cubit/pams_survey/ps_land_form/ps_land_form_state.dart';
 import 'package:lf_survey/model/pams_survey/land_response.dart';
@@ -608,7 +609,13 @@ class _PsLandFormPageState extends State<PsLandFormPage> {
                               return CustomElevatedButton(
                                 isLoading: state is LoadingState,
                                 text: isUpdate ? "Update" : "Submit",
-                                onPressed: () {
+                                onPressed: () async {
+                                  final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                                  if (!context.mounted) return;
+                                  if (!locPermission) {
+                                    CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                                    return;
+                                  }
                                   context.read<PsLandFormCubit>().submitMethod(
                                     projectId: widget.prjDatum.projectId!,
                                     lat: latitude,

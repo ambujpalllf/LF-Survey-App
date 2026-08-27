@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
+import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/model/pams_survey/ps_prj_response.dart';
 import 'package:lf_survey/routes/app_routes_name.dart';
 import 'package:lf_survey/widgets/custom_app_bar.dart';
@@ -82,7 +84,13 @@ class _PsPrjDetailsPageState extends State<PsPrjDetailsPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
-                  onPressed: () {
+                  onPressed: () async {
+                    final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                    if (!context.mounted) return;
+                    if (!locPermission) {
+                      CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                      return;
+                    }
                     context.pushNamed(AppRoutesName.psPhotoPage, extra: {"projectData": widget.prjDatum});
                   },
                   child: Row(
@@ -100,7 +108,13 @@ class _PsPrjDetailsPageState extends State<PsPrjDetailsPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor),
-                  onPressed: () {
+                  onPressed: () async {
+                    final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                    if (!context.mounted) return;
+                    if (!locPermission) {
+                      CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                      return;
+                    }
                     context.pushNamed(AppRoutesName.psLandFormPage, extra: {"projectData": widget.prjDatum});
                   },
                   child: Row(

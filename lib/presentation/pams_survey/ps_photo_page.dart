@@ -11,6 +11,7 @@ import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/pams_survey/ps_photo/ps_photo_cubit.dart';
 import 'package:lf_survey/cubit/pams_survey/ps_photo/ps_photo_state.dart';
 import 'package:lf_survey/model/pams_survey/ps_photo_response.dart';
@@ -230,7 +231,13 @@ class _PsPhotoPageState extends State<PsPhotoPage> {
                   },
                 );
               }
-            : () {
+            : () async {
+                final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                if (!context.mounted) return;
+                if (!locPermission) {
+                  CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                  return;
+                }
                 CustomBottomsheet.addPhotoSheet(
                   context: context,
                   projectId: widget.prjDatum.projectId ?? 0,

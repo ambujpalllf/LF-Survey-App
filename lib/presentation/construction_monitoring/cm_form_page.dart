@@ -7,6 +7,7 @@ import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/construction_monitering/cm_form/cm_form_state.dart';
 import 'package:lf_survey/cubit/construction_monitering/cm_form/cm_form_cubit.dart';
 import 'package:lf_survey/model/construction_monitoring/cm_survey_model.dart';
@@ -1004,7 +1005,15 @@ class _CMFormPageState extends State<CMFormPage> {
                                   return CustomElevatedButton(
                                     isLoading: state is LoadingState,
                                     text: "Submit",
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                                      if (!context.mounted) return;
+                                      if (!locPermission) {
+                                        CustomSnackHelper.errorToast(
+                                          message: "Please enable location permission and GPS",
+                                        );
+                                        return;
+                                      }
                                       cmFormCubit.submit(
                                         surveyData: widget.surveyData,
                                         floors: floorsC.text,

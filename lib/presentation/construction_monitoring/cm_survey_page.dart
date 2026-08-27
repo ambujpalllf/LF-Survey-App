@@ -9,6 +9,7 @@ import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/construction_monitering/cm_survey/cm_survey_cubit.dart';
 import 'package:lf_survey/cubit/construction_monitering/cm_survey/cm_survey_state.dart';
 import 'package:lf_survey/model/construction_monitoring/cm_survey_model.dart';
@@ -248,6 +249,12 @@ class _CmSurveyPageState extends State<CmSurveyPage> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(4.0)),
                       ),
                       onPressed: () async {
+                        final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                        if (!context.mounted) return;
+                        if (!locPermission) {
+                          CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                          return;
+                        }
                         await context.pushNamed(AppRoutesName.cmImgPage, extra: {"wingData": widget.wingData});
                         if (!context.mounted) return;
                         // commented date 05-06-2006 it is neccessary to un comment based locl Wing Id and wing Id
@@ -275,7 +282,7 @@ class _CmSurveyPageState extends State<CmSurveyPage> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(4.0)),
                       ),
                       onPressed: widget.wingData.submitStatus == true
-                          ? () {
+                          ? () async {
                               showDialog(
                                 context: context,
                                 builder: (_) {
@@ -303,6 +310,12 @@ class _CmSurveyPageState extends State<CmSurveyPage> {
                               );
                             }
                           : () async {
+                              final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                              if (!context.mounted) return;
+                              if (!locPermission) {
+                                CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
+                                return;
+                              }
                               await context.pushNamed(
                                 AppRoutesName.cmFormPage,
                                 extra: {
