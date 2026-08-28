@@ -129,6 +129,26 @@ class _CMFormPageState extends State<CMFormPage> {
     plumbingC.dispose();
     woodWorkC.dispose();
     paintingC.dispose();
+    remarksC.dispose();
+    totalUnitsC.dispose();
+    totalSoldC.dispose();
+    totalSoldPercentageC.dispose();
+    totalUnsoldC.dispose();
+    totalUnsoldPercentageC.dispose();
+    saleableRateC.dispose();
+    carpetRateC.dispose();
+  }
+
+  void clearConstructionFields() {
+    rccC.clear();
+    uptoSlabC.clear();
+    plasteringInternalC.clear();  
+    plasteringExternalC.clear();
+    flooringC.clear();
+    electricC.clear();
+    plumbingC.clear();
+    woodWorkC.clear();
+    paintingC.clear();
   }
 
   bool _isUpdating = false;
@@ -644,6 +664,10 @@ class _CMFormPageState extends State<CMFormPage> {
                               errorText: plinthErMsg,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
                               onChanged: (value) {
+                                final percentage = int.tryParse(value);
+                                if (percentage == null || percentage < 100) {
+                                  clearConstructionFields();
+                                }
                                 cmFormCubit.formValidation(
                                   floors: floorsC.text,
                                   slabs: slabsC.text,
