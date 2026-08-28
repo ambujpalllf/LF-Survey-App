@@ -10,7 +10,6 @@ import 'package:lf_survey/app_popups/cutsom_alert_dialogues.dart';
 import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
-import 'package:lf_survey/constants/snackbar_helper.dart';
 import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/residential/project_image/prj_img_cubit.dart';
 import 'package:lf_survey/cubit/residential/project_image/prj_img_state.dart';
@@ -168,12 +167,8 @@ class _PrjImagePageState extends State<PrjImagePage> {
           ),
           child: Icon(Icons.add_a_photo_sharp, color: AppColors.white),
           onPressed: () async {
-            final locPermission = await Utils.checkLocationAndGpsPermission(context);
+            if (!await Utils.checkLocationAndGpsPermission(context)) return;
             if (!context.mounted) return;
-            if (!locPermission) {
-              CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-              return;
-            }
             CustomBottomsheet.addPrjImgBottomSheet(
               context: context,
               projectId: widget.projectId,

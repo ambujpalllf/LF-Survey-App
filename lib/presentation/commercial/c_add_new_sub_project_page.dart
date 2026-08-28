@@ -639,7 +639,8 @@ class _CAddNewSubProjectPageState extends State<CAddNewSubProjectPage> {
                           child: CustomElevatedButton(
                             backgroundColor: AppColors.red,
                             text: "SAVE",
-                            onPressed: () {
+                            onPressed: () async {
+                              if (!await Utils.checkLocationAndGpsPermission(context)) return;
                               subProjectCubit.submitData(
                                 projectId: widget.cNewProjectEntity?.prjId ?? "",
                                 dos: widget.project?.dos ?? widget.cNewProjectEntity?.dos,

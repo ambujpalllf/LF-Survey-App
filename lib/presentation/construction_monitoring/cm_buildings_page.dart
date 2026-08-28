@@ -126,12 +126,8 @@ class _CmBuildingsPageState extends State<CmBuildingsPage> {
                     finalSubmitInfo();
                   }
                 : () async {
-                    final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                    if (!await Utils.checkLocationAndGpsPermission(context)) return;
                     if (!context.mounted) return;
-                    if (!locPermission) {
-                      CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                      return;
-                    }
                     CutsomAlertDialogues.addBuildingDialogue(
                       context: context,
                       buildingC: buildingC,
@@ -206,12 +202,8 @@ class _CmBuildingsPageState extends State<CmBuildingsPage> {
                       //     .toList();
                       return GestureDetector(
                         onTap: () async {
-                          final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                          if (!await Utils.checkLocationAndGpsPermission(context)) return;
                           if (!context.mounted) return;
-                          if (!locPermission) {
-                            CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                            return;
-                          }
                           await context.pushNamed(
                             AppRoutesName.cmSubPrjPage,
                             extra: {"projectData": widget.prjDatum, "buildingData": building},
@@ -256,14 +248,8 @@ class _CmBuildingsPageState extends State<CmBuildingsPage> {
                                   alignment: Alignment.topRight,
                                   child: GestureDetector(
                                     onTap: () async {
-                                      final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                                      if (!await Utils.checkLocationAndGpsPermission(context)) return;
                                       if (!context.mounted) return;
-                                      if (!locPermission) {
-                                        CustomSnackHelper.errorToast(
-                                          message: "Please enable location permission and GPS",
-                                        );
-                                        return;
-                                      }
                                       if (widget.prjDatum.cmStatus == 1) {
                                         finalSubmitInfo();
                                         return;

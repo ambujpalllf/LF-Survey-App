@@ -5,6 +5,7 @@ import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/commercial/c_sub_project_details/c_sub_project_details_cubit.dart';
 import 'package:lf_survey/cubit/commercial/c_sub_project_details/c_sub_project_detais_state.dart';
 import 'package:lf_survey/model/db_model/commercial/c_sub_project_entity.dart';
@@ -78,7 +79,9 @@ class _CSubProjectDetailsPageState extends State<CSubProjectDetailsPage> {
                     Flexible(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
-                        onPressed: () {
+                        onPressed: () async {
+                          if (!await Utils.checkLocationAndGpsPermission(context)) return;
+                          if (!context.mounted) return;
                           context.pushNamed(
                             AppRoutesName.imageListPage,
                             extra: {
@@ -101,7 +104,9 @@ class _CSubProjectDetailsPageState extends State<CSubProjectDetailsPage> {
                     Flexible(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
-                        onPressed: () {
+                        onPressed: () async {
+                          if (!await Utils.checkLocationAndGpsPermission(context)) return;
+                          if (!context.mounted) return;
                           context.pushNamed(
                             AppRoutesName.cProjectImagePage,
                             extra: {
@@ -137,6 +142,8 @@ class _CSubProjectDetailsPageState extends State<CSubProjectDetailsPage> {
         ),
         backgroundColor: AppColors.red,
         onPressed: () async {
+          if (!await Utils.checkLocationAndGpsPermission(context)) return;
+          if (!context.mounted) return;
           await context.pushNamed(AppRoutesName.cSubProjectEditPage, extra: {"subProjectData": widget.subProjectData});
           if (!context.mounted) return;
           context.read<CSubProjectDetailsCubit>().getData(subProjectId: subProjectData!.subProjectId!);

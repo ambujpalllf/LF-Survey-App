@@ -104,12 +104,8 @@ class _ImageListPageState extends State<ImageListPage> {
                   onPressed: isSync == true
                       ? () {}
                       : () async {
-                          final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                          if (!await Utils.checkLocationAndGpsPermission(context)) return;
                           if (!context.mounted) return;
-                          if (!locPermission) {
-                            CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                            return;
-                          }
                           isSync = true;
                           prjListViewCubit.syncImages(prjImage: prjImage);
                         },
@@ -134,12 +130,8 @@ class _ImageListPageState extends State<ImageListPage> {
                   );
                   return;
                 }
-                final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                if (!await Utils.checkLocationAndGpsPermission(context)) return;
                 if (!context.mounted) return;
-                if (!locPermission) {
-                  CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                  return;
-                }
                 CutsomAlertDialogues.deleteDialogue(
                   context: context,
                   onDelete: () {

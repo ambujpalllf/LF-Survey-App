@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/model/db_model/commercial/c_new_project_entity.dart';
 import 'package:lf_survey/routes/app_routes_name.dart';
 import 'package:lf_survey/widgets/custom_app_bar.dart';
@@ -58,7 +59,9 @@ class CNewProjectDetailsPage extends StatelessWidget {
                   isCenter: true,
                   title: "Add New Sub-Project",
                   icon: Icons.add,
-                  onPressed: () {
+                  onPressed: () async {
+                    if (!await Utils.checkLocationAndGpsPermission(context)) return;
+                    if (!context.mounted) return;
                     context.pushNamed(
                       AppRoutesName.cNewSubProjectPage,
                       extra: {"newProjectData": projectData, "projectData": null},
@@ -73,7 +76,9 @@ class CNewProjectDetailsPage extends StatelessWidget {
                   isCenter: true,
                   title: "Photo View",
                   icon: Icons.camera_alt,
-                  onPressed: () {
+                  onPressed: () async {
+                    if (!await Utils.checkLocationAndGpsPermission(context)) return;
+                    if (!context.mounted) return;
                     context.pushNamed(
                       AppRoutesName.addNewImagePrjPage,
                       extra: {"projectId": projectData.prjId, "prjType": "comm"},

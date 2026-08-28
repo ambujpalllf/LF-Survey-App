@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:lf_survey/app_popups/cutsom_alert_dialogues.dart';
+import 'package:lf_survey/constants/snackbar_helper.dart';
 import 'package:location/location.dart' as loc;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
@@ -111,7 +112,7 @@ class Utils {
       if (!serviceEnabled) {
         debugPrint('Location services are disabled.');
         // throw Exception("Location services are disabled.");
-
+        CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
         return false;
       }
     }

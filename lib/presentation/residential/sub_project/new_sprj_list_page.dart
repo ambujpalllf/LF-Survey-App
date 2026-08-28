@@ -296,16 +296,8 @@ class _NewSPrjListPageState extends State<NewSPrjListPage> {
                                             Expanded(
                                               child: InkWell(
                                                 onTap: () async {
-                                                  final locPermission = await Utils.checkLocationAndGpsPermission(
-                                                    context,
-                                                  );
+                                                  if (!await Utils.checkLocationAndGpsPermission(context)) return;
                                                   if (!context.mounted) return;
-                                                  if (!locPermission) {
-                                                    CustomSnackHelper.errorToast(
-                                                      message: "Please enable location permission and GPS",
-                                                    );
-                                                    return;
-                                                  }
                                                   await context.pushNamed(
                                                     AppRoutesName.newFlatListPage,
                                                     extra: {
@@ -343,16 +335,8 @@ class _NewSPrjListPageState extends State<NewSPrjListPage> {
                                               child: InkWell(
                                                 onTap: sprjData.syncGlobalStatus == 1
                                                     ? () async {
-                                                        final locPermission = await Utils.checkLocationAndGpsPermission(
-                                                          context,
-                                                        );
+                                                        if (!await Utils.checkLocationAndGpsPermission(context)) return;
                                                         if (!context.mounted) return;
-                                                        if (!locPermission) {
-                                                          CustomSnackHelper.errorToast(
-                                                            message: "Please enable location permission and GPS",
-                                                          );
-                                                          return;
-                                                        }
                                                         context.pushNamed(
                                                           AppRoutesName.addNewSPrjFormPage,
                                                           extra: {
@@ -367,16 +351,8 @@ class _NewSPrjListPageState extends State<NewSPrjListPage> {
                                                         );
                                                       }
                                                     : () async {
-                                                        final locPermission = await Utils.checkLocationAndGpsPermission(
-                                                          context,
-                                                        );
+                                                        if (!await Utils.checkLocationAndGpsPermission(context)) return;
                                                         if (!context.mounted) return;
-                                                        if (!locPermission) {
-                                                          CustomSnackHelper.errorToast(
-                                                            message: "Please enable location permission and GPS",
-                                                          );
-                                                          return;
-                                                        }
                                                         await context.pushNamed(
                                                           AppRoutesName.addNewSPrjFormPage,
                                                           extra: {
@@ -487,12 +463,8 @@ class _NewSPrjListPageState extends State<NewSPrjListPage> {
         floatingActionButton: FloatingActionButton(
           backgroundColor: AppColors.red,
           onPressed: () async {
-            final locPermission = await Utils.checkLocationAndGpsPermission(context);
+            if (!await Utils.checkLocationAndGpsPermission(context)) return;
             if (!context.mounted) return;
-            if (!locPermission) {
-              CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-              return;
-            }
             if (subProjectList.isNotEmpty) {
               setState(() {
                 isShowCopyUi = true;

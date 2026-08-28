@@ -668,12 +668,7 @@ class _AddNewProjectPageState extends State<AddNewProjectPage> {
                             backgroundColor: AppColors.red,
                             text: "SAVE",
                             onPressed: () async {
-                              final locPermission = await Utils.checkLocationAndGpsPermission(context);
-                              if (!context.mounted) return;
-                              if (!locPermission) {
-                                CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                                return;
-                              }
+                              if (!await Utils.checkLocationAndGpsPermission(context)) return;
                               final result = await addNewPrjCubit.saveProject(
                                 qtrId: qtrId,
                                 qtr: qtr,

@@ -5,7 +5,6 @@ import 'package:lf_survey/app_popups/cutsom_alert_dialogues.dart';
 import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
-import 'package:lf_survey/constants/snackbar_helper.dart';
 import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/residential/sub_project/sprj_details/s_prj_details_cubit.dart';
 import 'package:lf_survey/cubit/residential/sub_project/sprj_details/s_prj_details_state.dart';
@@ -320,12 +319,8 @@ class _SubProjectDetailsPageState extends State<SubProjectDetailsPage> {
           child: FloatingActionButton(
             backgroundColor: AppColors.red,
             onPressed: () async {
-              final locPermission = await Utils.checkLocationAndGpsPermission(context);
+              if (!await Utils.checkLocationAndGpsPermission(context)) return;
               if (!context.mounted) return;
-              if (!locPermission) {
-                CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                return;
-              }
               await context.pushNamed(
                 AppRoutesName.subProjectDetailsFormPage,
                 extra: {"subProjectData": widget.subProjectsDatum},
@@ -353,12 +348,7 @@ class _SubProjectDetailsPageState extends State<SubProjectDetailsPage> {
       ),
       // onPressed:onPressed,
       onPressed: () async {
-        final locPermission = await Utils.checkLocationAndGpsPermission(context);
-        if (!context.mounted) return;
-        if (!locPermission) {
-          CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-          return;
-        }
+        if (!await Utils.checkLocationAndGpsPermission(context)) return;
         onPressed();
       },
       child: Row(
@@ -388,12 +378,8 @@ class _SubProjectDetailsPageState extends State<SubProjectDetailsPage> {
       ),
       // onPressed: onPressed,
       onPressed: () async {
-        final locPermission = await Utils.checkLocationAndGpsPermission(context);
-        if (!context.mounted) return;
-        if (!locPermission) {
-          CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-          return;
-        }
+        if (!await Utils.checkLocationAndGpsPermission(context)) return;
+
         onPressed();
       },
       child: Row(

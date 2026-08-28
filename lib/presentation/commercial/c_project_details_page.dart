@@ -6,6 +6,7 @@ import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_images.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/commercial/c_project_details/c_project_details_cubit.dart';
 import 'package:lf_survey/cubit/commercial/c_project_details/c_project_details_state.dart';
 import 'package:lf_survey/model/db_model/commercial/c_project_entity.dart';
@@ -25,7 +26,8 @@ class CProjectDetailsPage extends StatelessWidget {
         title: "Project Details",
         actions: [
           InkWell(
-            onTap: () {
+            onTap: () async {
+              if (!await Utils.checkLocationAndGpsPermission(context)) return;
               cPrjDetailsCubit.openGoogleMapsDirection(
                 projectData.pxval ?? 0.0,
                 projectData.pyval ?? 0.0,
@@ -176,6 +178,7 @@ class CProjectDetailsPage extends StatelessWidget {
                 SizedBox(
                   width: MediaQuery.sizeOf(context).width * 0.6,
                   child: customSuffixIcButton(
+                    context: context,
                     title: "SUB PROJECTS",
                     icon: Icons.arrow_forward_ios,
                     onPressed: () {
@@ -188,6 +191,7 @@ class CProjectDetailsPage extends StatelessWidget {
                   children: [
                     Expanded(
                       child: customPrefixIcButton(
+                        context: context,
                         isCenter: true,
                         title: "List View",
                         icon: Icons.list,
@@ -201,6 +205,7 @@ class CProjectDetailsPage extends StatelessWidget {
                     ),
                     Expanded(
                       child: customPrefixIcButton(
+                        context: context,
                         isCenter: true,
                         title: "Photo View",
                         icon: Icons.camera_alt,
@@ -226,7 +231,9 @@ class CProjectDetailsPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.red,
-        onPressed: () {
+        onPressed: () async {
+          if (!await Utils.checkLocationAndGpsPermission(context)) return;
+          if (!context.mounted) return;
           context.pushNamed(AppRoutesName.cPrjEditPage, extra: {"projectData": projectData});
         },
         shape: RoundedRectangleBorder(
@@ -239,13 +246,22 @@ class CProjectDetailsPage extends StatelessWidget {
   }
 
   // Suffix icon button
-  Widget customSuffixIcButton({required String title, required IconData icon, required VoidCallback onPressed}) {
+  Widget customSuffixIcButton({
+    required BuildContext context,
+    required String title,
+    required IconData icon,
+    required VoidCallback onPressed,
+  }) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.red,
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       ),
-      onPressed: onPressed,
+      // onPressed: onPressed,
+      onPressed: () async {
+        if (!await Utils.checkLocationAndGpsPermission(context)) return;
+        onPressed();
+      },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -261,6 +277,7 @@ class CProjectDetailsPage extends StatelessWidget {
 
   // Prefix icon button
   Widget customPrefixIcButton({
+    required BuildContext context,
     required String title,
     required IconData icon,
     required VoidCallback onPressed,
@@ -274,7 +291,11 @@ class CProjectDetailsPage extends StatelessWidget {
         backgroundColor: AppColors.red,
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       ),
-      onPressed: onPressed,
+      // onPressed: onPressed,
+      onPressed: () async {
+        if (!await Utils.checkLocationAndGpsPermission(context)) return;
+        onPressed();
+      },
       child: isLoading
           ? SizedBox(
               width: 25,

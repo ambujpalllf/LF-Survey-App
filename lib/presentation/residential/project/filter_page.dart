@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/residential/filter/filter_cubit.dart';
 import 'package:lf_survey/cubit/residential/filter/filter_state.dart';
 import 'package:lf_survey/routes/app_routes_name.dart';
@@ -248,7 +249,9 @@ class _FilterPageState extends State<FilterPage> {
                       child: CustomElevatedButton(
                         borderRadius: 0,
                         text: "CLEAR FILTER",
-                        onPressed: () {
+                        onPressed: () async {
+                          if (!await Utils.checkLocationAndGpsPermission(context)) return;
+                          if (!context.mounted) return;
                           context.read<FilterCubit>().clearFilter();
                           clearFields();
                           context.pop();
@@ -260,7 +263,9 @@ class _FilterPageState extends State<FilterPage> {
                       child: CustomElevatedButton(
                         borderRadius: 0,
                         text: "APPLY",
-                        onPressed: () {
+                        onPressed: () async {
+                          if (!await Utils.checkLocationAndGpsPermission(context)) return;
+                          if (!context.mounted) return;
                           Map<String, dynamic> filterData = {
                             "projectType": selectedProject ?? {},
                             "selectedTotalSupply": selectedTotalSupply ?? {},

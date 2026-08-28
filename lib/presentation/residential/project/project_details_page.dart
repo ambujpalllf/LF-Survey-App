@@ -51,12 +51,7 @@ class ProjectDetailsPage extends StatelessWidget {
           actions: [
             InkWell(
               onTap: () async {
-                final locPermission = await Utils.checkLocationAndGpsPermission(context);
-                if (!context.mounted) return;
-                if (!locPermission) {
-                  CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                  return;
-                }
+                if (!await Utils.checkLocationAndGpsPermission(context)) return;
                 prjDetailsCubit.openGoogleMapsDirection(
                   projectData.pxval ?? 0.0,
                   projectData.pyval ?? 0.0,
@@ -318,12 +313,8 @@ class ProjectDetailsPage extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           backgroundColor: AppColors.red,
           onPressed: () async {
-            final locPermission = await Utils.checkLocationAndGpsPermission(context);
+            if (!await Utils.checkLocationAndGpsPermission(context)) return;
             if (!context.mounted) return;
-            if (!locPermission) {
-              CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-              return;
-            }
             context.pushNamed(AppRoutesName.projectEditFormPage, extra: {"projectData": projectData});
           },
           shape: RoundedRectangleBorder(
@@ -350,12 +341,8 @@ class ProjectDetailsPage extends StatelessWidget {
       ),
       // onPressed: onPressed,
       onPressed: () async {
-        final locPermission = await Utils.checkLocationAndGpsPermission(context);
-        if (!context.mounted) return;
-        if (!locPermission) {
-          CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-          return;
-        }
+        if (!await Utils.checkLocationAndGpsPermission(context)) return;
+
         onPressed();
       },
       child: Row(
@@ -389,12 +376,7 @@ class ProjectDetailsPage extends StatelessWidget {
       ),
       // onPressed: onPressed,
       onPressed: () async {
-        final locPermission = await Utils.checkLocationAndGpsPermission(context);
-        if (!context.mounted) return;
-        if (!locPermission) {
-          CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-          return;
-        }
+        if (!await Utils.checkLocationAndGpsPermission(context)) return;
         onPressed();
       },
       child: isLoading

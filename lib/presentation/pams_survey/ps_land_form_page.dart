@@ -610,12 +610,8 @@ class _PsLandFormPageState extends State<PsLandFormPage> {
                                 isLoading: state is LoadingState,
                                 text: isUpdate ? "Update" : "Submit",
                                 onPressed: () async {
-                                  final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                                  if (!await Utils.checkLocationAndGpsPermission(context)) return;
                                   if (!context.mounted) return;
-                                  if (!locPermission) {
-                                    CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                                    return;
-                                  }
                                   context.read<PsLandFormCubit>().submitMethod(
                                     projectId: widget.prjDatum.projectId!,
                                     lat: latitude,

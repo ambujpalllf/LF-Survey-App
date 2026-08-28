@@ -5,6 +5,7 @@ import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/commercial/c_download/c_download_cubit.dart';
 import 'package:lf_survey/cubit/commercial/c_download/c_download_state.dart';
 import 'package:lf_survey/model/db_model/commercial/c_location_entity.dart';
@@ -214,7 +215,9 @@ class _CDownloadPageState extends State<CDownloadPage> {
                             text: widget.appBarTitle.toLowerCase() == "filter"
                                 ? "SELECT LOCATION"
                                 : "DOWNLOAD PROJECTS",
-                            onPressed: () {
+                            onPressed: () async {
+                              if (!await Utils.checkLocationAndGpsPermission(context)) return;
+                              if (!context.mounted) return;
                               if (locationIds.isEmpty) {
                                 CustomSnackHelper.customToastMsg(
                                   context: context,

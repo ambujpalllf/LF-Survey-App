@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/commercial/c_project_edit/c_project_edit_cubit.dart';
 import 'package:lf_survey/cubit/commercial/c_project_edit/c_project_edit_state.dart';
 import 'package:lf_survey/model/db_model/commercial/c_project_entity.dart';
@@ -238,7 +239,8 @@ class _CProjectEditPageState extends State<CProjectEditPage> {
                                   isLoading: state is LoadingState,
                                   backgroundColor: AppColors.red,
                                   text: "Save",
-                                  onPressed: () {
+                                  onPressed: () async {
+                                    if (!await Utils.checkLocationAndGpsPermission(context)) return;
                                     projectEditCubit.updateProject(
                                       projectData: widget.projectEntity,
                                       reraNo: reraNoC.text,

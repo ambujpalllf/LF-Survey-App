@@ -230,12 +230,8 @@ class _NewFlatListPageState extends State<NewFlatListPage> {
                 borderRadius: BorderRadiusGeometry.circular(100),
               ),
               onPressed: () async {
-                final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                if (!await Utils.checkLocationAndGpsPermission(context)) return;
                 if (!context.mounted) return;
-                if (!locPermission) {
-                  CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                  return;
-                }
                 final resp = await CustomBottomsheet.addNewFlatBtmSheet(
                   context: context,
                   subPrjId: widget.subPrjId,

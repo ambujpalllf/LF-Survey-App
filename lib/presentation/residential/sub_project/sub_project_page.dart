@@ -62,12 +62,8 @@ class _SubProjectPageState extends State<SubProjectPage> {
         actions: [
           IconButton(
             onPressed: () async {
-              final locPermission = await Utils.checkLocationAndGpsPermission(context);
+              if (!await Utils.checkLocationAndGpsPermission(context)) return;
               if (!context.mounted) return;
-              if (!locPermission) {
-                CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                return;
-              }
               bool isSaveFlats = flats.every((e) => e.dataFilled == 1);
               bool isSyncedSubProjects = subProjects.every((e) => e.syncGlobalStatus == 1);
 
@@ -131,12 +127,8 @@ class _SubProjectPageState extends State<SubProjectPage> {
                     padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                   ),
                   onPressed: () async {
-                    final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                    if (!await Utils.checkLocationAndGpsPermission(context)) return;
                     if (!context.mounted) return;
-                    if (!locPermission) {
-                      CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                      return;
-                    }
                     context.pushNamed(
                       AppRoutesName.newSubPrjListPage,
                       extra: {
@@ -212,12 +204,8 @@ class _SubProjectPageState extends State<SubProjectPage> {
 
                               return InkWell(
                                 onTap: () async {
-                                  final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                                  if (!await Utils.checkLocationAndGpsPermission(context)) return;
                                   if (!context.mounted) return;
-                                  if (!locPermission) {
-                                    CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                                    return;
-                                  }
                                   final result = await context.pushNamed(
                                     AppRoutesName.subProjectDetailsPage,
                                     extra: {"subProjectData": subProjectData, "projectData": widget.projectData},

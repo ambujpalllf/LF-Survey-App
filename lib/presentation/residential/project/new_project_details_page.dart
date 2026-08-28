@@ -99,12 +99,8 @@ class _NewProjectDetailsPageState extends State<NewProjectDetailsPage> {
                           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                         ),
                         onPressed: () async {
-                          final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                          if (!await Utils.checkLocationAndGpsPermission(context)) return;
                           if (!context.mounted) return;
-                          if (!locPermission) {
-                            CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                            return;
-                          }
                           context.pushNamed(
                             AppRoutesName.newSubPrjListPage,
                             extra: {
@@ -140,12 +136,8 @@ class _NewProjectDetailsPageState extends State<NewProjectDetailsPage> {
                           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                         ),
                         onPressed: () async {
-                          final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                          if (!await Utils.checkLocationAndGpsPermission(context)) return;
                           if (!context.mounted) return;
-                          if (!locPermission) {
-                            CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                            return;
-                          }
                           context.pushNamed(
                             AppRoutesName.addNewImagePrjPage,
                             extra: {"projectId": widget.newProjectEntity.prjId, "prjType": null},

@@ -431,7 +431,8 @@ class _CAddNewProjectPageState extends State<CAddNewProjectPage> {
                                 isLoading: state is LoadingState,
                                 backgroundColor: AppColors.red,
                                 text: "SAVE",
-                                onPressed: () {
+                                onPressed: () async {
+                                  if (!await Utils.checkLocationAndGpsPermission(context)) return;
                                   cAddNewPrjCubit.submitData(
                                     empId: empId,
                                     comQtr: comQtr,
@@ -461,7 +462,9 @@ class _CAddNewProjectPageState extends State<CAddNewProjectPage> {
                           child: CustomElevatedButton(
                             backgroundColor: AppColors.red,
                             text: "CANCEL",
-                            onPressed: () {
+                            onPressed: () async {
+                              if (!await Utils.checkLocationAndGpsPermission(context)) return;
+                              if (!context.mounted) return;
                               Navigator.pop(context);
                             },
                           ),

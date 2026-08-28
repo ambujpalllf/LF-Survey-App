@@ -104,12 +104,8 @@ class _SubProjectFlatDetailsPageState extends State<SubProjectFlatDetailsPage> {
                           padding: const EdgeInsets.only(bottom: 12.0),
                           child: InkWell(
                             onTap: () async {
-                              final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                              if (!await Utils.checkLocationAndGpsPermission(context)) return;
                               if (!context.mounted) return;
-                              if (!locPermission) {
-                                CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                                return;
-                              }
                               if (widget.subProjectsDatum.syncGlobalStatus == 1) {
                                 CustomSnackHelper.customToastMsg(
                                   context: context,

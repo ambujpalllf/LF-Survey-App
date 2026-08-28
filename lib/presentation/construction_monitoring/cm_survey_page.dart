@@ -249,12 +249,8 @@ class _CmSurveyPageState extends State<CmSurveyPage> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(4.0)),
                       ),
                       onPressed: () async {
-                        final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                        if (!await Utils.checkLocationAndGpsPermission(context)) return;
                         if (!context.mounted) return;
-                        if (!locPermission) {
-                          CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                          return;
-                        }
                         await context.pushNamed(AppRoutesName.cmImgPage, extra: {"wingData": widget.wingData});
                         if (!context.mounted) return;
                         // commented date 05-06-2006 it is neccessary to un comment based locl Wing Id and wing Id
@@ -310,12 +306,8 @@ class _CmSurveyPageState extends State<CmSurveyPage> {
                               );
                             }
                           : () async {
-                              final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                              if (!await Utils.checkLocationAndGpsPermission(context)) return;
                               if (!context.mounted) return;
-                              if (!locPermission) {
-                                CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                                return;
-                              }
                               await context.pushNamed(
                                 AppRoutesName.cmFormPage,
                                 extra: {

@@ -106,6 +106,8 @@ class _CProjectPageState extends State<CProjectPage> {
             iconColor: AppColors.red,
             color: AppColors.white,
             onSelected: (value) async {
+              if (!await Utils.checkLocationAndGpsPermission(context)) return;
+              if (!context.mounted) return;
               switch (value) {
                 case 'Map':
                   if (searchedProjects.isNotEmpty) {

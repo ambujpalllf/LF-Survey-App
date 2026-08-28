@@ -7,6 +7,7 @@ import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/commercial/c_sub_project_edit/c_sub_prj_edit_cubit.dart';
 import 'package:lf_survey/cubit/commercial/c_sub_project_edit/c_sub_prj_edit_state.dart';
 import 'package:lf_survey/model/db_model/commercial/c_sub_project_entity.dart';
@@ -658,7 +659,8 @@ class _CSubProjectEditPageState extends State<CSubProjectEditPage> {
                                   isLoading: state is LoadingState,
                                   backgroundColor: AppColors.red,
                                   text: "Save",
-                                  onPressed: () {
+                                  onPressed: () async {
+                                    if (!await Utils.checkLocationAndGpsPermission(context)) return;
                                     cSubPrjEditCubit.updateData(
                                       subProjectData: widget.subProjectData,
                                       basement: basementC.text,

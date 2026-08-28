@@ -266,12 +266,8 @@ class _DownloadPageState extends State<DownloadPage> {
                           isLoading: isLoading,
                           text: widget.appBarTitle.toLowerCase() == "filter" ? "SELECT LOCATION" : "DOWNLOAD PROJECTS",
                           onPressed: () async {
-                            final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                            if (!await Utils.checkLocationAndGpsPermission(context)) return;
                             if (!context.mounted) return;
-                            if (!locPermission) {
-                              CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                              return;
-                            }
                             if (selectedLocationIds.isEmpty) {
                               CustomSnackHelper.customToastMsg(
                                 context: context,

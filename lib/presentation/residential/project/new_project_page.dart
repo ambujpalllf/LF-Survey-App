@@ -180,12 +180,8 @@ class _NewProjectPageState extends State<NewProjectPage> {
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: InkWell(
                               onTap: () async {
-                                final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                                if (!await Utils.checkLocationAndGpsPermission(context)) return;
                                 if (!context.mounted) return;
-                                if (!locPermission) {
-                                  CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-                                  return;
-                                }
                                 context.pushNamed(AppRoutesName.newProjectDetailsPage, extra: {"newProjectData": item});
                               },
                               child: Container(
@@ -242,12 +238,8 @@ class _NewProjectPageState extends State<NewProjectPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.red,
         onPressed: () async {
-          final locPermission = await Utils.checkLocationAndGpsPermission(context);
+          if (!await Utils.checkLocationAndGpsPermission(context)) return;
           if (!context.mounted) return;
-          if (!locPermission) {
-            CustomSnackHelper.errorToast(message: "Please enable location permission and GPS");
-            return;
-          }
           final res = await context.pushNamed(AppRoutesName.addNewPrjPage);
           if (!context.mounted) return;
           if (res == true) {

@@ -9,6 +9,7 @@ import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/commercial/c_new_sub_projects/c_new_sub_projects_cubit.dart';
 import 'package:lf_survey/cubit/commercial/c_new_sub_projects/c_new_sub_projects_state.dart';
 import 'package:lf_survey/model/db_model/commercial/c_new_project_entity.dart';
@@ -64,9 +65,26 @@ class _CNewSubProjectsPageState extends State<CNewSubProjectsPage> {
         title: "New Sub Project",
         actions: [
           IconButton(
-            onPressed: () {
+            onPressed: () async {
+              if (!await Utils.checkLocationAndGpsPermission(context)) return;
+              if (!context.mounted) return;
               List<CNewSubProjectEntity> unSyncSubPrj = supProjects.where((e) => e.globalSyncStatus == 0).toList();
-              if (unSyncSubPrj.isEmpty) return;
+              if (unSyncSubPrj.isEmpty) {
+                CutsomAlertDialogues.customDialog(
+                  context: context,
+                  title: "Nothing to Sync",
+                  message: "There are no sub-projects waiting to be synced.",
+                  actionsWidget: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text("OK", style: AppTextStyle.ts14RB.copyWith(color: AppColors.red)),
+                    ),
+                  ],
+                );
+                return;
+              }
               CutsomAlertDialogues.customDialog(
                 context: context,
                 title: "Confirmation",
@@ -241,6 +259,8 @@ class _CNewSubProjectsPageState extends State<CNewSubProjectsPage> {
         backgroundColor: Colors.red,
         shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(100)),
         onPressed: () async {
+          if (!await Utils.checkLocationAndGpsPermission(context)) return;
+          if (!context.mounted) return;
           await context.pushNamed(
             AppRoutesName.cAddNewSubProjectPage,
             extra: {"newProjectData": widget.cNewProjectEntity, "projectData": widget.project},

@@ -59,7 +59,9 @@ class _CSubProjectPageState extends State<CSubProjectPage> {
             children: [
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
-                onPressed: () {
+                onPressed: () async {
+                  if (!await Utils.checkLocationAndGpsPermission(context)) return;
+                  if (!context.mounted) return;
                   context.pushNamed(
                     AppRoutesName.cNewSubProjectPage,
                     extra: {"newProjectData": null, "projectData": widget.project},
@@ -99,7 +101,9 @@ class _CSubProjectPageState extends State<CSubProjectPage> {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: GestureDetector(
-                          onTap: () {
+                          onTap: () async {
+                            if (!await Utils.checkLocationAndGpsPermission(context)) return;
+                            if (!context.mounted) return;
                             context.pushNamed(
                               AppRoutesName.cSubProjectDetailsPage,
                               extra: {"subProjectData": subPrjData},

@@ -9,6 +9,7 @@ import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
+import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/commercial/c_new_%20project/c_new_project_cubit.dart';
 import 'package:lf_survey/cubit/commercial/c_new_%20project/c_new_project_state.dart';
 import 'package:lf_survey/model/db_model/commercial/c_new_project_entity.dart';
@@ -67,9 +68,26 @@ class _CNewProjectPageState extends State<CNewProjectPage> {
         ),
         actions: [
           IconButton(
-            onPressed: () {
+            onPressed: () async {
+              if (!await Utils.checkLocationAndGpsPermission(context)) return;
+              if (!context.mounted) return;
               List<CNewProjectEntity> unsyncPrj = filteredProjects.where((e) => e.globalSyncStatus == 0).toList();
-              if (unsyncPrj.isEmpty) return;
+              if (unsyncPrj.isEmpty) {
+                CutsomAlertDialogues.customDialog(
+                  context: context,
+                  title: "Nothing to Sync",
+                  message: "There are no projects waiting to be synced.",
+                  actionsWidget: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text("OK", style: AppTextStyle.ts14RB.copyWith(color: AppColors.red)),
+                    ),
+                  ],
+                );
+                return;
+              }
               CutsomAlertDialogues.customDialog(
                 context: context,
                 title: "Confirmation",
@@ -270,6 +288,8 @@ class _CNewProjectPageState extends State<CNewProjectPage> {
         shape: CircleBorder(),
         backgroundColor: AppColors.red,
         onPressed: () async {
+          if (!await Utils.checkLocationAndGpsPermission(context)) return;
+          if (!context.mounted) return;
           await context.pushNamed(AppRoutesName.cAddNewProjectPage);
           if (!context.mounted) return;
           context.read<CNewProjectCubit>().fetchData();

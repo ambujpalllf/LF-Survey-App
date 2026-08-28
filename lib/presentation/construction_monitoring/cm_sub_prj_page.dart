@@ -223,14 +223,8 @@ class _CMSubPrjPageState extends State<CMSubPrjPage> {
                                 padding: const EdgeInsets.only(bottom: 8.0),
                                 child: InkWell(
                                   onTap: () async {
-                                    final locPermission = await Utils.checkLocationAndGpsPermission(context);
+                                    if (!await Utils.checkLocationAndGpsPermission(context)) return;
                                     if (!context.mounted) return;
-                                    if (!locPermission) {
-                                      CustomSnackHelper.errorToast(
-                                        message: "Please enable location permission and GPS",
-                                      );
-                                      return;
-                                    }
                                     wingData.projectId = widget.prjDatum.projectId;
                                     await context.pushNamed(AppRoutesName.cmSurveyPage, extra: {"wingData": wingData});
                                     cmSubPrjCubit.getSurvey(projectId: widget.prjDatum.projectId!);
@@ -279,16 +273,8 @@ class _CMSubPrjPageState extends State<CMSubPrjPage> {
                                               if (wingData.submitStatus != true)
                                                 GestureDetector(
                                                   onTap: () async {
-                                                    final locPermission = await Utils.checkLocationAndGpsPermission(
-                                                      context,
-                                                    );
+                                                    if (!await Utils.checkLocationAndGpsPermission(context)) return;
                                                     if (!context.mounted) return;
-                                                    if (!locPermission) {
-                                                      CustomSnackHelper.errorToast(
-                                                        message: "Please enable location permission and GPS",
-                                                      );
-                                                      return;
-                                                    }
                                                     // Delete wing which is created by user
                                                     if (wingData.createdWingId != null) {
                                                       CutsomAlertDialogues.deleteDialogue(
@@ -386,16 +372,8 @@ class _CMSubPrjPageState extends State<CMSubPrjPage> {
                                               onTap: wingData.submitStatus == true
                                                   ? null
                                                   : () async {
-                                                      final locPermission = await Utils.checkLocationAndGpsPermission(
-                                                        context,
-                                                      );
+                                                      if (!await Utils.checkLocationAndGpsPermission(context)) return;
                                                       if (!context.mounted) return;
-                                                      if (!locPermission) {
-                                                        CustomSnackHelper.errorToast(
-                                                          message: "Please enable location permission and GPS",
-                                                        );
-                                                        return;
-                                                      }
                                                       wingSurvey.isEmpty || wingImage.isEmpty
                                                           ? CutsomAlertDialogues.dataAlertDialogue(context: context)
                                                           : wingUnsyncSurvey.isNotEmpty || wingUnsyncImage.isNotEmpty

@@ -1006,14 +1006,7 @@ class _CMFormPageState extends State<CMFormPage> {
                                     isLoading: state is LoadingState,
                                     text: "Submit",
                                     onPressed: () async {
-                                      final locPermission = await Utils.checkLocationAndGpsPermission(context);
-                                      if (!context.mounted) return;
-                                      if (!locPermission) {
-                                        CustomSnackHelper.errorToast(
-                                          message: "Please enable location permission and GPS",
-                                        );
-                                        return;
-                                      }
+                                      if (!await Utils.checkLocationAndGpsPermission(context)) return;
                                       cmFormCubit.submit(
                                         surveyData: widget.surveyData,
                                         floors: floorsC.text,
