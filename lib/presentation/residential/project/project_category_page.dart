@@ -5,9 +5,14 @@ import 'package:lf_survey/constants/app_colors.dart';
 import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_images.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
+import 'package:lf_survey/constants/snackbar_helper.dart';
 import 'package:lf_survey/constants/storage_function.dart';
+import 'package:lf_survey/constants/storage_key.dart';
 import 'package:lf_survey/constants/utils.dart';
+import 'package:lf_survey/database/db_helper.dart';
+import 'package:lf_survey/model/location_model.dart';
 import 'package:lf_survey/routes/app_routes_name.dart';
+import 'package:lf_survey/services/api_client.dart';
 import 'package:lf_survey/services/foreground_task_handler.dart';
 
 class ProjectCategoryPage extends StatefulWidget {
@@ -23,6 +28,10 @@ class _ProjectCategoryPageState extends State<ProjectCategoryPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       foregroundTask();
+      // Syncs location data collected in the background that has not
+      // yet been synchronized with the server. This method is called
+      // once when the user visits this page.
+      syncLocation(context);
     });
   }
 
@@ -31,6 +40,33 @@ class _ProjectCategoryPageState extends State<ProjectCategoryPage> {
     if (isLocationPermission == true) {
       if (!mounted) return;
       ForegroundTaskHandler.foregroundServiceInit(context);
+    }
+  }
+
+  void syncLocation(context) async {
+    try {
+      final userId = await StorageFunction.readIntData(StorageKey.userId);
+      if (userId != null) {
+        List<LocationModel> locationData = await DBHelper.getAllLocations(userId: userId);
+        if (locationData.isNotEmpty) {
+          final response = await ApiClient.userLFLocation(locationData: locationData);
+          if (response != null) {
+            List<dynamic> syncData = response["gpssyncstatuslist"] ?? [];
+            if (syncData.isNotEmpty) {
+              for (var item in syncData) {
+                int gpsTrackerId = item["gps_tracker_id"];
+                LocationModel? localItem = locationData.where((e) => e.id == gpsTrackerId).firstOrNull;
+                if (localItem != null) {
+                  await DBHelper.deleteLocationById(id: localItem.id!);
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint("Error : $e");
+      CustomSnackHelper.customToastMsg(context: context, message: "Location sync failed. Please try again.");
     }
   }
 
@@ -73,10 +109,7 @@ class _ProjectCategoryPageState extends State<ProjectCategoryPage> {
                                       await StorageFunction.clearStorage();
                                       await FlutterForegroundTask.stopService();
                                     },
-                                    child: Text(
-                                      "OK",
-                                      style: AppTextStyle.ts16BB.copyWith(color: AppColors.primaryDarkColor),
-                                    ),
+                                    child: Text("OK", style: AppTextStyle.ts16BB.copyWith(color: AppColors.primaryDarkColor)),
                                   ),
                                 ],
                               );

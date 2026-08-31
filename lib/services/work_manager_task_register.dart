@@ -3,15 +3,28 @@ import 'package:lf_survey/services/workmanager_task_key.dart';
 import 'package:workmanager/workmanager.dart';
 
 class WorkManagerTaskRegister {
-  static void syncLocation() {
-    Workmanager().registerPeriodicTask(
-      WorkmanagerTaskKey.syncLocation,
-      WorkmanagerTaskKey.syncLocation,
-      frequency: const Duration(minutes: 15),
-      constraints: Constraints(networkType: NetworkType.connected),
-      existingWorkPolicy: ExistingPeriodicWorkPolicy.keep,
-    );
-  }
+  // static void syncLocation() {
+  //   Workmanager().registerPeriodicTask(
+  //     WorkmanagerTaskKey.syncLocation,
+  //     WorkmanagerTaskKey.syncLocation,
+  //     frequency: const Duration(minutes: 15),
+  //     constraints: Constraints(networkType: NetworkType.connected),
+  //     existingWorkPolicy: ExistingPeriodicWorkPolicy.keep,
+  //   );
+  // }
+
+
+static Future<void> syncLocation() async {
+  await Workmanager().registerPeriodicTask(
+   WorkmanagerTaskKey.syncLocation,
+   WorkmanagerTaskKey.syncLocation,
+    frequency: const Duration(minutes: 15),
+    constraints: Constraints(
+      networkType: NetworkType.connected,
+    ),
+    existingWorkPolicy: ExistingPeriodicWorkPolicy.keep,
+  );
+}
 
   static void updateProject({required int projectId}) {
     Workmanager().registerOneOffTask(

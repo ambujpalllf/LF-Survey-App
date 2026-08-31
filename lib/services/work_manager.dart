@@ -51,7 +51,6 @@ void callbackDispatcher() {
       // switch (task) {
       switch (normalizedTask) {
         case WorkmanagerTaskKey.syncLocation:
-        debugPrint("Take Name ##############: $normalizedTask");
           final userId = await StorageFunction.readIntData(StorageKey.userId);
           final loginType = await StorageFunction.readStringData(StorageKey.loginType);
           if (userId != null && loginType != null && loginType != "lfSurvey") {
@@ -78,7 +77,6 @@ void callbackDispatcher() {
               if (locationData.isNotEmpty) {
                 final response = await ApiClient.userLFLocation(locationData: locationData);
                 if (response != null) {
-                  debugPrint("MmMMMMMMMMMMMM*************: Sync location");
                   List<dynamic> syncData = response["gpssyncstatuslist"] ?? [];
                   if (syncData.isNotEmpty) {
                     for (var item in syncData) {

@@ -11,14 +11,18 @@ import 'package:lf_survey/constants/app_dimens.dart';
 import 'package:lf_survey/constants/app_text_style.dart';
 import 'package:lf_survey/constants/snackbar_helper.dart';
 import 'package:lf_survey/constants/storage_function.dart';
+import 'package:lf_survey/constants/storage_key.dart';
 import 'package:lf_survey/constants/utils.dart';
 import 'package:lf_survey/cubit/pams_survey/ps_project/ps_project_cubit.dart';
 import 'package:lf_survey/cubit/pams_survey/ps_project/ps_project_state.dart';
+import 'package:lf_survey/database/db_helper.dart';
 import 'package:lf_survey/model/construction_monitoring/cm_wing_response.dart';
+import 'package:lf_survey/model/location_model.dart';
 import 'package:lf_survey/model/pams_survey/land_response.dart';
 import 'package:lf_survey/model/pams_survey/ps_photo_response.dart';
 import 'package:lf_survey/model/pams_survey/ps_prj_response.dart';
 import 'package:lf_survey/routes/app_routes_name.dart';
+import 'package:lf_survey/services/api_client.dart';
 import 'package:lf_survey/services/foreground_task_handler.dart';
 import 'package:lf_survey/widgets/custom_app_bar.dart';
 import 'package:lf_survey/widgets/custom_textform_field.dart';
@@ -52,6 +56,10 @@ class _PsPrjPageState extends State<PsPrjPage> {
     if (!kIsWeb) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         foregroundTask();
+        // Syncs location data collected in the background that has not
+        // yet been synchronized with the server. This method is called
+        // once when the user visits this page.
+        syncLocation(context);
       });
     }
     context.read<PsProjectCubit>().getProjects();
@@ -68,6 +76,34 @@ class _PsPrjPageState extends State<PsPrjPage> {
     if (isLocationPermission == true) {
       if (!mounted) return;
       ForegroundTaskHandler.foregroundServiceInit(context);
+    }
+  }
+
+  void syncLocation(context) async {
+    try {
+      final userId = await StorageFunction.readIntData(StorageKey.userId);
+      if (userId != null) {
+        List<LocationModel> locationData = await DBHelper.getAllLocations(userId: userId);
+        if (locationData.isNotEmpty) {
+          final response = await ApiClient.userPSLocation(locationData: locationData);
+          if (response != null && response["status"].toString().toLowerCase() == "ok") {
+            Map<String, dynamic> data = response["data"];
+            List<dynamic> syncData = data["trackings"] ?? [];
+            if (syncData.isNotEmpty) {
+              for (var i in syncData) {
+                String appId = i["appId"].toString();
+                LocationModel? localItem = locationData.where((e) => e.id.toString() == appId).firstOrNull;
+                if (localItem != null) {
+                  await DBHelper.deleteLocationById(id: localItem.id!);
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint("Error : $e");
+      CustomSnackHelper.customToastMsg(context: context, message: "Location sync failed. Please try again.");
     }
   }
 
@@ -207,30 +243,15 @@ class _PsPrjPageState extends State<PsPrjPage> {
               filterProjects.clear();
               filterProjects.addAll(state.projects);
             } else if (state is ErrorState) {
-              CustomSnackHelper.customToastMsg(
-                context: context,
-                message: state.message,
-                bgColor: AppColors.white,
-                textColor: AppColors.black,
-              );
+              CustomSnackHelper.customToastMsg(context: context, message: state.message, bgColor: AppColors.white, textColor: AppColors.black);
             } else if (state is SuccessState) {
-              CustomSnackHelper.customToastMsg(
-                context: context,
-                message: state.message,
-                bgColor: AppColors.white,
-                textColor: AppColors.black,
-              );
+              CustomSnackHelper.customToastMsg(context: context, message: state.message, bgColor: AppColors.white, textColor: AppColors.black);
             } else if (state is DbClearState) {
               projects.clear();
               photos.clear();
               filterProjects.clear();
               psLand.clear();
-              CustomSnackHelper.customToastMsg(
-                context: context,
-                message: state.message,
-                bgColor: AppColors.white,
-                textColor: AppColors.black,
-              );
+              CustomSnackHelper.customToastMsg(context: context, message: state.message, bgColor: AppColors.white, textColor: AppColors.black);
             }
           },
           child: Padding(
@@ -241,14 +262,7 @@ class _PsPrjPageState extends State<PsPrjPage> {
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(4),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.shade300,
-                        blurRadius: 8,
-                        spreadRadius: 1,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
+                    boxShadow: [BoxShadow(color: Colors.grey.shade300, blurRadius: 8, spreadRadius: 1, offset: const Offset(0, 3))],
                   ),
                   child: CustomTextformField(
                     focusNode: searchFocusNode,
@@ -289,11 +303,7 @@ class _PsPrjPageState extends State<PsPrjPage> {
                                     children: [
                                       Icon(Icons.download),
                                       Flexible(
-                                        child: Text(
-                                          "Click on download button for download projects",
-                                          style: AppTextStyle.ts14MB,
-                                          textAlign: TextAlign.center,
-                                        ),
+                                        child: Text("Click on download button for download projects", style: AppTextStyle.ts14MB, textAlign: TextAlign.center),
                                       ),
                                     ],
                                   ),
@@ -306,20 +316,11 @@ class _PsPrjPageState extends State<PsPrjPage> {
                                 var prjData = filterProjects[index];
                                 var prjPhoto = photos.where((i) => i.projectId == prjData.projectId);
                                 var prjSyncPhoto = photos.where((i) => i.projectId == prjData.projectId && i.sync == 1);
-                                var prjUnSyncPhoto = photos.where(
-                                  (i) => i.projectId == prjData.projectId && i.sync == 0,
-                                );
-                                final prjLand = psLand.firstWhere(
-                                  (i) => i.projectId == prjData.projectId,
-                                  orElse: () => PsLandDatum(),
-                                );
+                                var prjUnSyncPhoto = photos.where((i) => i.projectId == prjData.projectId && i.sync == 0);
+                                final prjLand = psLand.firstWhere((i) => i.projectId == prjData.projectId, orElse: () => PsLandDatum());
 
-                                List<WingData> projectWings = wings
-                                    .where((e) => e.projectId == prjData.projectId)
-                                    .toList();
-                                var unSyncWings = projectWings
-                                    .where((element) => element.submitStatus != true)
-                                    .toList();
+                                List<WingData> projectWings = wings.where((e) => e.projectId == prjData.projectId).toList();
+                                var unSyncWings = projectWings.where((element) => element.submitStatus != true).toList();
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 8.0),
                                   child: Card(
@@ -340,23 +341,14 @@ class _PsPrjPageState extends State<PsPrjPage> {
                                           Row(
                                             spacing: 10,
                                             children: [
-                                              Expanded(
-                                                child: Text(prjData.projectName ?? "", style: AppTextStyle.ts14MB),
-                                              ),
+                                              Expanded(child: Text(prjData.projectName ?? "", style: AppTextStyle.ts14MB)),
                                               Text("${prjData.projectId}", style: AppTextStyle.ts14MB),
                                             ],
                                           ),
-                                          Text(
-                                            prjData.confirmationAddress ?? "",
-                                            style: AppTextStyle.ts12RB.copyWith(color: Colors.grey),
-                                          ),
+                                          Text(prjData.confirmationAddress ?? "", style: AppTextStyle.ts12RB.copyWith(color: Colors.grey)),
                                           Text(prjData.reraRegNo ?? "", style: AppTextStyle.ts12RB),
                                           // Text("Images Sync: ${prjPhoto.length}"),
-                                          counterwidget(
-                                            title: "Images Sync: ",
-                                            syncCount: " ${prjSyncPhoto.length}",
-                                            totalValue: "${prjPhoto.length}",
-                                          ),
+                                          counterwidget(title: "Images Sync: ", syncCount: " ${prjSyncPhoto.length}", totalValue: "${prjPhoto.length}"),
 
                                           Row(
                                             spacing: 10,
@@ -368,27 +360,15 @@ class _PsPrjPageState extends State<PsPrjPage> {
                                                       //     ? null
                                                       //     :
                                                       () async {
-                                                        await context.pushNamed(
-                                                          AppRoutesName.psPrjDetailsPage,
-                                                          extra: {"projectData": prjData},
-                                                        );
+                                                        await context.pushNamed(AppRoutesName.psPrjDetailsPage, extra: {"projectData": prjData});
                                                         if (!context.mounted) return;
                                                         psPrjCubit.getProjects();
                                                       },
                                                   child: Container(
                                                     alignment: Alignment.center,
                                                     padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                                                    decoration: BoxDecoration(
-                                                      color: prjData.apfStatus == 1
-                                                          ? Colors.grey.shade300
-                                                          : AppColors.primaryColor,
-                                                      borderRadius: BorderRadius.circular(4.0),
-                                                    ),
-                                                    child: Text(
-                                                      "PTI",
-                                                      style: AppTextStyle.ts14BW,
-                                                      textAlign: TextAlign.center,
-                                                    ),
+                                                    decoration: BoxDecoration(color: prjData.apfStatus == 1 ? Colors.grey.shade300 : AppColors.primaryColor, borderRadius: BorderRadius.circular(4.0)),
+                                                    child: Text("PTI", style: AppTextStyle.ts14BW, textAlign: TextAlign.center),
                                                   ),
                                                 ),
                                               ),
@@ -398,11 +378,7 @@ class _PsPrjPageState extends State<PsPrjPage> {
                                                       ? null
                                                       : () {
                                                           prjUnSyncPhoto.isNotEmpty || prjLand.globalSync == 0
-                                                              ? CutsomAlertDialogues.syncCountDialogue(
-                                                                  context: context,
-                                                                  surveyCount: prjLand.globalSync == 0 ? 1 : 0,
-                                                                  imageCount: prjUnSyncPhoto.length,
-                                                                )
+                                                              ? CutsomAlertDialogues.syncCountDialogue(context: context, surveyCount: prjLand.globalSync == 0 ? 1 : 0, imageCount: prjUnSyncPhoto.length)
                                                               : prjPhoto.isEmpty || prjLand.globalSync == 0
                                                               ? CutsomAlertDialogues.dataAlertDialogue(context: context)
                                                               : CutsomAlertDialogues.finalSubmitPrjDialogue(
@@ -410,27 +386,15 @@ class _PsPrjPageState extends State<PsPrjPage> {
                                                                   title: "project technical information",
                                                                   confirm: () {
                                                                     context.pop();
-                                                                    psPrjCubit.finalSubmitPrj(
-                                                                      projectData: prjData,
-                                                                      apfStatus: 1,
-                                                                    );
+                                                                    psPrjCubit.finalSubmitPrj(projectData: prjData, apfStatus: 1);
                                                                   },
                                                                 );
                                                         },
                                                   child: Container(
                                                     alignment: Alignment.center,
                                                     padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                                                    decoration: BoxDecoration(
-                                                      color: prjData.apfStatus == 1
-                                                          ? Colors.grey.shade300
-                                                          : AppColors.primaryColor,
-                                                      borderRadius: BorderRadius.circular(4.0),
-                                                    ),
-                                                    child: Text(
-                                                      "Final PTI",
-                                                      style: AppTextStyle.ts14BW,
-                                                      textAlign: TextAlign.center,
-                                                    ),
+                                                    decoration: BoxDecoration(color: prjData.apfStatus == 1 ? Colors.grey.shade300 : AppColors.primaryColor, borderRadius: BorderRadius.circular(4.0)),
+                                                    child: Text("Final PTI", style: AppTextStyle.ts14BW, textAlign: TextAlign.center),
                                                   ),
                                                 ),
                                               ),
@@ -442,26 +406,14 @@ class _PsPrjPageState extends State<PsPrjPage> {
                                               Expanded(
                                                 child: InkWell(
                                                   onTap: () async {
-                                                    await context.pushNamed(
-                                                      AppRoutesName.cmBuildingPage,
-                                                      extra: {"projectData": prjData},
-                                                    );
+                                                    await context.pushNamed(AppRoutesName.cmBuildingPage, extra: {"projectData": prjData});
                                                     if (!context.mounted) return;
                                                     psPrjCubit.getProjects();
                                                   },
                                                   child: Container(
                                                     padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                                                    decoration: BoxDecoration(
-                                                      color: prjData.cmStatus == 1
-                                                          ? Colors.grey.shade300
-                                                          : AppColors.primaryColor,
-                                                      borderRadius: BorderRadius.circular(4.0),
-                                                    ),
-                                                    child: Text(
-                                                      "CM",
-                                                      style: AppTextStyle.ts14BW,
-                                                      textAlign: TextAlign.center,
-                                                    ),
+                                                    decoration: BoxDecoration(color: prjData.cmStatus == 1 ? Colors.grey.shade300 : AppColors.primaryColor, borderRadius: BorderRadius.circular(4.0)),
+                                                    child: Text("CM", style: AppTextStyle.ts14BW, textAlign: TextAlign.center),
                                                   ),
                                                 ),
                                               ),
@@ -471,35 +423,20 @@ class _PsPrjPageState extends State<PsPrjPage> {
                                                       ? null
                                                       : () {
                                                           unSyncWings.isNotEmpty
-                                                              ? CutsomAlertDialogues.syncCMCountDialogue(
-                                                                  context: context,
-                                                                  surveyCount: unSyncWings.length,
-                                                                )
+                                                              ? CutsomAlertDialogues.syncCMCountDialogue(context: context, surveyCount: unSyncWings.length)
                                                               : CutsomAlertDialogues.finalSubmitPrjDialogue(
                                                                   context: context,
                                                                   title: "construction monitoring",
                                                                   confirm: () {
                                                                     context.pop();
-                                                                    psPrjCubit.finalSubmitPrj(
-                                                                      projectData: prjData,
-                                                                      cmStatus: 1,
-                                                                    );
+                                                                    psPrjCubit.finalSubmitPrj(projectData: prjData, cmStatus: 1);
                                                                   },
                                                                 );
                                                         },
                                                   child: Container(
                                                     padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                                                    decoration: BoxDecoration(
-                                                      color: prjData.cmStatus == 1
-                                                          ? Colors.grey.shade300
-                                                          : AppColors.primaryColor,
-                                                      borderRadius: BorderRadius.circular(4.0),
-                                                    ),
-                                                    child: Text(
-                                                      "Final CM",
-                                                      style: AppTextStyle.ts14BW,
-                                                      textAlign: TextAlign.center,
-                                                    ),
+                                                    decoration: BoxDecoration(color: prjData.cmStatus == 1 ? Colors.grey.shade300 : AppColors.primaryColor, borderRadius: BorderRadius.circular(4.0)),
+                                                    child: Text("Final CM", style: AppTextStyle.ts14BW, textAlign: TextAlign.center),
                                                   ),
                                                 ),
                                               ),
@@ -531,9 +468,7 @@ class _PsPrjPageState extends State<PsPrjPage> {
         children: [
           TextSpan(
             text: syncCount,
-            style: AppTextStyle.ts14MB.copyWith(
-              color: int.parse(syncCount) == int.parse(totalValue) ? AppColors.primaryColor : AppColors.red,
-            ),
+            style: AppTextStyle.ts14MB.copyWith(color: int.parse(syncCount) == int.parse(totalValue) ? AppColors.primaryColor : AppColors.red),
           ),
           TextSpan(
             text: "/$totalValue",

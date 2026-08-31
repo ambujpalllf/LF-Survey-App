@@ -64,10 +64,11 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   if (!kIsWeb) {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    Workmanager().initialize(callbackDispatcher);
+    // Workmanager().initialize(callbackDispatcher);
+    await Workmanager().initialize(callbackDispatcher);
     FlutterForegroundTask.initCommunicationPort();
     ForegroundTaskHandler.initService();
-    WorkManagerTaskRegister.syncLocation();
+   await WorkManagerTaskRegister.syncLocation();
     RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
       NotificationServices().handleLocalData(initialMessage);

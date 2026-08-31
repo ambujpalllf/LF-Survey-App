@@ -1,5 +1,6 @@
 class WorkmanagerTaskKey {
-  static const String syncLocation = "syncLocation";
+  // static const String syncLocation = "syncLocation";
+  static const String syncLocation = "com.lfsurvey.syncLocation";
   //LF Survey Residential Module
   static const String updateProject = "updateProject";
   static const String syncImage = "syncImage";
